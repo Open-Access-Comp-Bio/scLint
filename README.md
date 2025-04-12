@@ -1,6 +1,4 @@
-<h1 align="center">
-  <img src="scLint.svg" alt="scLint logo" width="400"/>
-</h1>
+<img src="scLint.svg" alt="scLint logo" style="max-width: 100%; height: auto;" />
 
 # scLint
 
