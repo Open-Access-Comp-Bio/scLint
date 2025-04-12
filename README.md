@@ -1,4 +1,4 @@
-<img src="scLint.png" alt="scLint logo" width="400"/>
+<img src="scLint.png" alt="scLint logo" width="600"/>
 
 # scLint
 
