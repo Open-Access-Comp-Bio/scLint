@@ -1,4 +1,4 @@
-![scLint logo](scLint.svg)
+![scLint logo](scLint.png)
 
 # scLint
 
