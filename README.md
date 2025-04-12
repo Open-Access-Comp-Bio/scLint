@@ -1,4 +1,4 @@
-<img src="scLint.svg" alt="scLint logo" style="max-width: 100%; height: auto;" />
+![scLint logo](scLint.svg)
 
 # scLint
 
