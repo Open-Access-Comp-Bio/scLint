@@ -1,0 +1,20 @@
+[project]
+name = "scLint"
+version = "0.0.1"
+authors = [
+  { name="Steve Cheney", email="scheney.cb@gmail.com" },
+  { name="Tanvir Saini", email="" },
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+
+[project.urls]
+Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
+Issues = "https://github.com/Open-Access-Comp-Bio/scLint/issues"
