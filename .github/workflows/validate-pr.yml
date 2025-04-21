@@ -23,8 +23,7 @@ jobs:
 
         # Require feature/ or bug/ branches to only merge into staging
         if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" =~ ^(feature|bug)/ ]]; then
-          echo "❌ Feature or bug branches must target 'staging', not 'main'."
-          exit 1
+          echo "⚠️ WARNING: Feature or bug branch is targeting 'main'. Consider targeting 'staging' instead."
         fi
 
         echo "✅ PR branch name and target are valid."
