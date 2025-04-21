@@ -45,4 +45,3 @@ def test_mocking_example(monkeypatch):
     monkeypatch.setattr(SomeClass, "real_method", mock_return)
     obj = SomeClass()
     assert obj.real_method() == "mocked!"
-
