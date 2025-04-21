@@ -32,7 +32,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest"]
+dev = [
+    "pytest",
+    "black",
+    "codespell"
+    ]
 
 [project.urls]
 Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
