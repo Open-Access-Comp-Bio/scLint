@@ -23,6 +23,9 @@ dependencies = [
     "seaborn"
 ]
 
+[project.optional-dependencies]
+dev = ["pytest"]
+
 [project.urls]
 Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
 Issues = "https://github.com/Open-Access-Comp-Bio/scLint/issues"
