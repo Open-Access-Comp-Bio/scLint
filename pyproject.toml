@@ -3,7 +3,7 @@ name = "scLint"
 version = "0.0.1"
 authors = [
   { name="Steve Cheney", email="scheney.cb@gmail.com" },
-  { name="Tanvir Saini", email="" },
+  { name="Tanvir Saini", email="tanvirxsaini@gmail.com" },
 ]
 description = "A small example package"
 readme = "README.md"
