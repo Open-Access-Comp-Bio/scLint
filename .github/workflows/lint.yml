@@ -22,10 +22,12 @@ jobs:
         python -m pip install --upgrade pip
         pip install black codespell
 
-    - name: Run Black (check only)
+    - name: Run Black (check + show diff)
       run: |
-        black --check .
+        echo "Checking formatting with Black..."
+        black --check --diff --color .
 
     - name: Run codespell
       run: |
+        echo "Running spell check with codespell..."
         codespell --ignore-words-list="nd,te,hass"
