@@ -1,0 +1,44 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = ["scLint"]
+
+[project]
+name = "scLint"
+version = "0.0.1"
+authors = [
+  { name="Steve Cheney", email="scheney.cb@gmail.com" },
+  { name="Tanvir Saini", email="tanvirxsaini@gmail.com" },
+]
+description = "A small example package"
+readme = "README.md"
+requires-python = ">=3.12.3"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+license = "Apache-2.0"
+license-files = ["LICEN[CS]E*"]
+
+dependencies = [
+    "pandas",
+    "scanpy",
+    "anndata",
+    "matplotlib",
+    "seaborn"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "black[jupyter]",
+    "codespell"
+    ]
+
+[project.urls]
+Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
+Issues = "https://github.com/Open-Access-Comp-Bio/scLint/issues"

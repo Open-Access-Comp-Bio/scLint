@@ -1,0 +1,30 @@
+name: Validate PR
+
+on:
+  pull_request:
+    branches:
+      - staging
+      - main
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check branch naming and targets
+      run: |
+        echo "Head branch: ${{ github.head_ref }}"
+        echo "Base branch: ${{ github.base_ref }}"
+        
+        # Allow 'staging', 'feature/*', or 'bug/*' branches only
+        if [[ ! "${{ github.head_ref }}" =~ ^(feature|bug)/ && "${{ github.head_ref }}" != "staging" ]]; then
+          echo "❌ Branch name must start with 'feature/', 'bug/', or be 'staging'."
+          exit 1
+        fi
+
+        # Prevent feature/ or bug/ branches from merging directly into main
+        if [[ "${{ github.head_ref }}" =~ ^(feature|bug)/ && "${{ github.base_ref }}" == "main" ]]; then
+          echo "❌ Feature or bug branches must merge into 'staging', not 'main'."
+          exit 1
+        fi
+
+        echo "✅ PR branch name and target are valid."
