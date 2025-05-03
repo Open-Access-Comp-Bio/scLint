@@ -15,15 +15,16 @@ jobs:
         echo "Head branch: ${{ github.head_ref }}"
         echo "Base branch: ${{ github.base_ref }}"
         
-        # Require PR branch to be prefixed with feature/ or bug/
-        if [[ ! "${{ github.head_ref }}" =~ ^(feature|bug)/ ]]; then
-          echo "❌ Branch name must start with 'feature/' or 'bug/'."
+        # Allow 'staging', 'feature/*', or 'bug/*' branches only
+        if [[ ! "${{ github.head_ref }}" =~ ^(feature|bug)/ && "${{ github.head_ref }}" != "staging" ]]; then
+          echo "❌ Branch name must start with 'feature/', 'bug/', or be 'staging'."
           exit 1
         fi
 
-        # Require feature/ or bug/ branches to only merge into staging
-        if [[ "${{ github.base_ref }}" == "main" && "${{ github.head_ref }}" =~ ^(feature|bug|staging)/ ]]; then
-          echo "⚠️ WARNING: Feature or bug branch is targeting 'main'. Consider targeting 'staging' instead."
+        # Prevent feature/ or bug/ branches from merging directly into main
+        if [[ "${{ github.head_ref }}" =~ ^(feature|bug)/ && "${{ github.base_ref }}" == "main" ]]; then
+          echo "❌ Feature or bug branches must merge into 'staging', not 'main'."
+          exit 1
         fi
 
         echo "✅ PR branch name and target are valid."
