@@ -16,7 +16,7 @@ jobs:
         echo "Base branch: ${{ github.base_ref }}"
         
         # Allow 'staging', 'feature/*', or 'bug/*' branches only
-        if [[ ! "${{ github.head_ref }}" =~ ^(feature|bug)/ && "${{ github.head_ref }}" != "staging" ]]; then
+        if [[ ! "${{ github.head_ref }}" =~ ^(feature|bug)/.* && "${{ github.head_ref }}" != "staging" ]]; then
           echo "❌ Branch name must start with 'feature/', 'bug/', or be 'staging'."
           exit 1
         fi
