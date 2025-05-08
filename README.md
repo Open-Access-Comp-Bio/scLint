@@ -4,9 +4,10 @@
 
 Python tool for linting, cleaning, and producing exploratory analysis of single-cell RNA-seq data.
 
-## Preparing Environemnt
+## Preparing Environment
 
 If you haven't done so already, you can download the `environment.yml` file and run the following command below:
+
 
 ```bash
 conda env create -f environment.yml
