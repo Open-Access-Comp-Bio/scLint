@@ -1,0 +1,78 @@
+import pytest
+import numpy as np
+import pandas as pd
+import scanpy as sc
+from unittest.mock import MagicMock, patch
+
+from scLint.linter import *
+
+@pytest.fixture
+def valid_adata():
+    obs_data = pd.DataFrame({
+        "cell_type": ["T", "B"],
+        "sample": ["S1", "S2"],
+        "batch": ["B1", "B2"],
+        "n_genes": [1000, 900],
+        "n_counts": [10000, 11000],
+        "percent_mito": [5.1, 4.9],
+        "leiden": ["0", "1"],
+        "condition": ["treated", "control"]
+    }, index=["cell1", "cell2"])
+
+    var_data = pd.DataFrame({
+        "gene_ids": ["ENSG1", "ENSG2"],
+        "gene_symbols": ["TP53", "EGFR"],
+        "highly_variable": [True, False],
+        "means": [0.5, 0.8],
+        "dispersions": [0.1, 0.2],
+        "mito": [False, True],
+        "chromosome": ["1", "MT"]
+    }, index=["gene1", "gene2"])
+
+    X = np.array([[1, 2], [3, 4]])
+    return sc.AnnData(X=X, obs=obs_data, var=var_data)
+
+def test_check_obs_valid(valid_adata):
+    issues = check_obs(valid_adata)
+    assert issues == []
+
+def test_check_obs_missing_key(valid_adata):
+    valid_adata.obs.drop(columns=["cell_type"], inplace=True)
+    issues = check_obs(valid_adata)
+    assert any(i.message.startswith("Missing 'cell_type'") for i in issues)
+    assert all(isinstance(i, Issue) for i in issues)
+
+def test_check_obs_missing_values(valid_adata):
+    valid_adata.obs.loc["cell1", "sample"] = np.nan
+    issues = check_obs(valid_adata)
+    assert any(i.is_warning() for i in issues)
+
+def test_check_vars_valid(valid_adata):
+    issues = check_vars(valid_adata)
+    assert issues == []
+
+def test_check_vars_missing_key(valid_adata):
+    valid_adata.var.drop(columns=["gene_ids"], inplace=True)
+    issues = check_vars(valid_adata)
+    assert any(i.message.startswith("Missing 'gene_ids'") for i in issues)
+
+def test_check_vars_duplicate_index(valid_adata):
+    valid_adata.var.index = ["gene1", "gene1"]
+    issues = check_vars(valid_adata)
+    assert any(i.is_warning() for i in issues)
+
+def test_check_integrity_valid(valid_adata):
+    issues = check_integrity(valid_adata)
+    assert issues == []
+
+def test_check_integrity_obs_mismatch(valid_adata):
+    """Todo"""
+    
+def test_check_integrity_var_mismatch(valid_adata):
+    """Todo"""
+
+def test_run_linter_with_known_issues(valid_adata):
+    """Todo"""
+
+def test_issue_class_str_and_flags():
+    """Todo"""
