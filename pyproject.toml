@@ -4,40 +4,45 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
 package-dir = {"" = "src"}
-packages = ["scLint"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [project]
 name = "scLint"
 version = "0.0.1"
 authors = [
-  { name="Steve Cheney", email="scheney.cb@gmail.com" },
-  { name="Tanvir Saini", email="tanvirxsaini@gmail.com" },
+  { name = "Steve Cheney", email = "scheney.cb@gmail.com" },
+  { name = "Tanvir Saini", email = "tanvirxsaini@gmail.com" }
 ]
-description = "A small example package"
+description = "A linter tool for validating Scanpy AnnData objects"
 readme = "README.md"
-requires-python = ">=3.12.3"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent"
 ]
-license = "Apache-2.0"
-license-files = ["LICEN[CS]E*"]
 
 dependencies = [
-    "pandas",
-    "scanpy",
-    "anndata",
-    "matplotlib",
-    "seaborn"
+  "pandas",
+  "scanpy",
+  "anndata",
+  "matplotlib",
+  "seaborn"
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "black",
-    "black[jupyter]",
-    "codespell"
-    ]
+  "pytest",
+  "black",
+  "black[jupyter]",
+  "codespell"
+]
+
+[project.scripts]
+sclint = "scLint.linter:main"
 
 [project.urls]
 Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
