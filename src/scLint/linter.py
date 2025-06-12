@@ -2,6 +2,8 @@ import scanpy as sc
 import numpy as np
 import pandas as pd
 
+
+# Using Tevino dataset as first test case
 ##############################
 # Global Vars and Classes
 ##############################
@@ -140,7 +142,7 @@ def print_report(issues):
         issues (List[Issue]): List of Issue instances to display.
     """
     if not issues:
-        print("✅ No issues found in AnnData object.")
+        print("No issues found in AnnData object.")
         return
 
     errors = sum(1 for i in issues if i.is_error())
