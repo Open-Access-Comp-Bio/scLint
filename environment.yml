@@ -1,0 +1,17 @@
+name: sclint
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11.11
+  - numpy=2.2.5
+  - pandas=2.2.3
+  - ipykernel=6.29.5
+  - matplotlib=3.10.3
+  - matplotlib-inline=0.1.7
+  - scipy=1.15.2
+  - seaborn=0.13.2
+  - scikit-learn=1.7.0
+  - pip:
+    - anndata
