@@ -13,5 +13,10 @@ dependencies:
   - scipy=1.15.2
   - seaborn=0.13.2
   - scikit-learn=1.7.0
+  - jupyterlab
+  - pip
+  - pytest
   - pip:
-    - anndata
+      - anndata
+      - hdf5plugin
+      - "zarr>=2.18.7,<3.0.0"
