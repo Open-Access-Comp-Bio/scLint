@@ -51,27 +51,27 @@ python main.py <dir_path> [--sep <sep>] [--verbose] [--save] [--output <output_f
 ```
 ## Example Use Cases
 
-# Basic usage (tab-delimited files):
+### Basic usage (tab-delimited files):
 ```
 python sc_parser.py ./tests/collateral/scdata
 ```
 
-# Use comma-delimited input:
+### Use comma-delimited input:
 ```
 python sc_parser.py ./tests/collateral/scdata --sep comma
 ```
 
-# Save output to disk within running dir as `my_data.h5ad`:
+### Save output to disk within running dir as `my_data.h5ad`:
 ```
 python sc_parser.py ./tests/collateral/scdata --save --output my_data
 ```
 
-# Save output to disk outside of running dir as 1my_data.h5ad1:
+### Save output to disk outside of running dir as 1my_data.h5ad1:
 ```
 python sc_parser.py ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data
 ```
 
-# Full verbose run:
+### Full verbose run:
 ```
 python sc_parser.py ./tests/collateral/scdata --sep tab --verbose --save --output result
 ```
