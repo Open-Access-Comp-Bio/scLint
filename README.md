@@ -66,7 +66,7 @@ python sc_parser.py ./tests/collateral/scdata --sep comma
 python sc_parser.py ./tests/collateral/scdata --save --output my_data
 ```
 
-### Save output to disk outside of running dir as 1my_data.h5ad1:
+### Save output to disk outside of running dir as my_data.h5ad1:
 ```
 python sc_parser.py ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data
 ```
