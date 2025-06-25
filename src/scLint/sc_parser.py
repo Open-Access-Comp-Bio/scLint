@@ -1,48 +1,52 @@
-import pandas as pd
-import anndata as ad
-import sc_parser_utility
+from sc_parser_utility import (pool_files, id_files, open_files, create_anndata, anndata_out)
 import logging_messages
-import file_ext
+from pathlib import Path
+import sys
 
 class scParser():
-    def __init__(self, path:list, is_dir=True, sep=None, combine=None):
+    def __init__(self, path:str, sep:str, logging:bool=False, save_data:bool = False, fname:str = None)->None:
         self.path = path
-        #TODO is_dir may not be needed, so remove
-        self.is_dir = is_dir
-        self.adata = ad.AnnData()
-        if sep is None:
-            self.sep = '\t'
-        else:
-            self.sep = sep
-        if combine is None:
-            self.combine = 'combine'
-        else:
-            self.combine = combine
+        self.sep = sep
+        self.save_data = save_data
+        self.fname = fname
         self.sorted = None
+        self.df_paths = None
         self.df_dicts = None
+        self.adata = None
+        if logging:
+            logging_messages.activate()
 
     def path_check(self)->None:
-        # TODO remove this function, assert that the input
-        # to always be a directory of files.
-        if self.is_dir is True and file_ext.FILE_EXTS in self.path.any():
+        """
+        This function ensures the path given 
+        """
+        pathway = Path(self.path)
+        check_presence = pathway.exists()
+        if not check_presence:
+            logging_messages.s
+            sys.exit()
+        check_state = pathway.is_dir()
+        if not check_state:
             logging_messages.caught_file_ext()
-            self.is_dir=False
+            sys.exit()
+        # NOTE the True argument is a legacy/conceptual argument
+        # the intent is that this tool can be used for a directory of
+        # files and a small handfull that can be based through CLI manually
+        logging_messages.log_file_handeling(self.path, True)
+
+    def sort_files(self) -> None:
+        self.sorted  =  pool_files(self.path)
 
     def sort_content(self)->None:
-        # TODO some layer of sophisticated name checking
-        # might be needed in the future. i.e. are unsorted
-        # and sorted present? is var empty? what to do when
-        # var is empty? etc..etc..
-        logging_messages.log_file_messages(self.path, self.is_dir)
-        self.sorted = sc_parser_utility.id_files(self.path)
+        self.df_paths = id_files(self.sorted)
 
     def open_content(self)->None:
-        self.dict_dfs = sc_parser_utility.open_files(self.sorted, sep=self.sep, combine=self.combine)
+        self.dict_dfs = open_files(self.df_paths, 
+                                   sep=self.sep)
 
-    def gen_anndata()->None:
-        #TODO for keys in anndata generate
-        #appropriate anndata object
-        pass
+    def gen_anndata(self)->None:
+        self.adata = create_anndata(self.dict_dfs)
 
-    def jar_anndata():
-        pass
+    def jar_anndata(self):
+        if self.save_data:
+            anndata_out(self.adata, self.fname)

@@ -1,5 +1,4 @@
 from pathlib import Path
-from functools import reduce
 import pandas as pd
 from scipy import sparse
 import file_ext
@@ -55,7 +54,7 @@ def id_files(path_dict:dict)->dict:
             identified_files['uns'].append(file_path)
     return identified_files
 
-def open_files(identified_files:dict, sep='\t',combine='concat'):
+def open_files(identified_files:dict, sep='\t'):
     """
     Input: A dict with identified files and their paths
     Output: dict with pandas DataFrames.
@@ -148,10 +147,11 @@ def create_anndata(opened_files:dict, store_disk:bool=False, fname:str='anndata'
             adata = ad.AnnData(X=data_df.T)
             continue
         adata = _anndata_helper(adata, adata_key, data_df)
-    # TODO this can be moved into a different py file.
-    if store_disk:
-        logging_messages.save_to_disk('anndata object', fname)
-        adata.write_h5ad(fname,
-                         compression=hdf5plugin.FILTERS["zstd"])
-        logging_messages.success()
+    logging_messages.success()
     return adata
+
+def anndata_out(adata:ad.AnnData, fname:str='anndata') -> None:
+    fname += '.h5ad'
+    logging_messages.save_to_disk('anndata object', fname)
+    adata.write_h5ad(fname,compression=hdf5plugin.FILTERS["zstd"])
+    logging_messages.success()
