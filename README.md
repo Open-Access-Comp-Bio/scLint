@@ -46,25 +46,35 @@ Your input directory should contain:
 - Optional QC summary or label files
 
 ## Usage [WILL NEED TO BE UPDATED AFTER MERGING COMPONENTS!!!]
-
+```
 python main.py <dir_path> [--sep <sep>] [--verbose] [--save] [--output <output_file>]
-
+```
 ## Example Use Cases
 
 # Basic usage (tab-delimited files):
-`python sc_parser.py ./tests/collateral/scdata`
+```
+python sc_parser.py ./tests/collateral/scdata
+```
 
 # Use comma-delimited input:
-`python sc_parser.py ./tests/collateral/scdata --sep comma`
+```
+python sc_parser.py ./tests/collateral/scdata --sep comma
+```
 
-# Save output to disk within running dir as 'my_data.h5ad':
-`python sc_parser.py ./tests/collateral/scdata --save --output my_data`
+# Save output to disk within running dir as `my_data.h5ad`:
+```
+python sc_parser.py ./tests/collateral/scdata --save --output my_data
+```
 
-# Save output to disk outside of running dir as 'my_data.h5ad':
-`python sc_parser.py ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data`
+# Save output to disk outside of running dir as 1my_data.h5ad1:
+```
+python sc_parser.py ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data
+```
 
 # Full verbose run:
-`python sc_parser.py ./tests/collateral/scdata --sep tab --verbose --save --output result`
+```
+python sc_parser.py ./tests/collateral/scdata --sep tab --verbose --save --output result
+```
 
 ## Notes
 - If `--save` is used without `--output`, the file will not be saved.
