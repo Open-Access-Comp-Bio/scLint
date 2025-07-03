@@ -1,4 +1,7 @@
+import os
+import sys
 import argparse
+import hdf5plugin
 import scanpy as sc
 import numpy as np
 import pandas as pd
@@ -158,45 +161,100 @@ def print_report(issues):
         print(f" - {issue}")
 
 
-def basic_exploration(adata):
+def save_plot(func, file_path, *args, **kwargs):
+    """Helper to save Scanpy plots with full control."""
+    with plt.rc_context():
+        func(*args, show=False, **kwargs)
+        plt.savefig(file_path, dpi=150, bbox_inches="tight")
+        plt.close()
+
+
+def basic_exploration(adata, output_dir=None):
     print(adata)
     print("\nObs columns:", adata.obs.columns.tolist())
     print("Var columns:", adata.var.columns.tolist())
 
-    sc.pp.calculate_qc_metrics(adata, inplace=True)
+    # Calculate QC metrics
+    sc.pp.calculate_qc_metrics(adata, percent_top=[1, 3, 5], inplace=True)
 
+    # Print summary stats
     print("\nQC Summary:")
-    print(adata.obs[['total_counts', 'n_genes_by_counts', 'pct_counts_mt']].describe())
+    print(adata.obs[['RNA.Counts', 'RNA.Features', 'Percent.MT']].describe())
 
-    sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'],
-                 jitter=0.4, multi_panel=True)
-    sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
-    sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
+    # Plotting
+    if output_dir:
+        os.makedirs(output_dir, exist_ok=True)
 
+        save_plot(
+            sc.pl.violin,
+            os.path.join(output_dir, "violin_qc.png"),
+            adata,
+            ['RNA.Features', 'RNA.Counts', 'Percent.MT'],
+            jitter=0.4,
+            multi_panel=True
+        )
+
+        save_plot(
+            sc.pl.scatter,
+            os.path.join(output_dir, "scatter_counts_vs_mt.png"),
+            adata,
+            x='RNA.Counts',
+            y='Percent.MT'
+        )
+
+        save_plot(
+            sc.pl.scatter,
+            os.path.join(output_dir, "scatter_counts_vs_features.png"),
+            adata,
+            x='RNA.Counts',
+            y='RNA.Features'
+        )
+    else:
+        sc.pl.violin(adata, ['RNA.Features', 'RNA.Counts', 'Percent.MT'], jitter=0.4, multi_panel=True)
+        sc.pl.scatter(adata, x='RNA.Counts', y='Percent.MT')
+        sc.pl.scatter(adata, x='RNA.Counts', y='RNA.Features')
+
+    # HVGs
     sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=2000)
-    sc.pl.highly_variable_genes(adata)
 
+    if output_dir:
+        save_plot(
+            sc.pl.highly_variable_genes,
+            os.path.join(output_dir, "highly_variable_genes.png"),
+            adata
+        )
+    else:
+        sc.pl.highly_variable_genes(adata)
+
+    # PCA
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
     sc.pp.pca(adata)
-    sc.pl.pca(adata, color='total_counts')
 
+    if output_dir:
+        save_plot(
+            sc.pl.pca,
+            os.path.join(output_dir, "pca.png"),
+            adata,
+            color='RNA.Counts'
+        )
+    else:
+        sc.pl.pca(adata, color='RNA.Counts')
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Load and explore an AnnData object from an HDF5 (.h5ad) file."
-    )
+    parser = argparse.ArgumentParser(description="Exploratory analysis of an AnnData object.")
+    parser.add_argument("adata_path", type=str, help="Path to .h5ad file")
     parser.add_argument(
-        "adata_path",
-        type=str,
-        help="Path to the .h5ad file containing the AnnData object"
+        "--output_dir", type=str, default=None,
+        help="If provided, plots will be saved there as PNGs instead of shown"
     )
     args = parser.parse_args()
 
+    # Load data
     print(f"Loading AnnData from: {args.adata_path}")
     adata = sc.read_h5ad(args.adata_path)
 
-    #basic_exploration(adata)
+    basic_exploration(adata, output_dir=args.output_dir)
 
 if __name__ == "__main__":
     main()
