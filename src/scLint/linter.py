@@ -1,6 +1,8 @@
+import argparse
 import scanpy as sc
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 
 # Using Tevino dataset as first test case
@@ -154,3 +156,47 @@ def print_report(issues):
 
     for issue in issues:
         print(f" - {issue}")
+
+
+def basic_exploration(adata):
+    print(adata)
+    print("\nObs columns:", adata.obs.columns.tolist())
+    print("Var columns:", adata.var.columns.tolist())
+
+    sc.pp.calculate_qc_metrics(adata, inplace=True)
+
+    print("\nQC Summary:")
+    print(adata.obs[['total_counts', 'n_genes_by_counts', 'pct_counts_mt']].describe())
+
+    sc.pl.violin(adata, ['n_genes_by_counts', 'total_counts', 'pct_counts_mt'],
+                 jitter=0.4, multi_panel=True)
+    sc.pl.scatter(adata, x='total_counts', y='pct_counts_mt')
+    sc.pl.scatter(adata, x='total_counts', y='n_genes_by_counts')
+
+    sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=2000)
+    sc.pl.highly_variable_genes(adata)
+
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+    sc.pp.pca(adata)
+    sc.pl.pca(adata, color='total_counts')
+
+
+def main():
+    parser = argparse.ArgumentParser(
+        description="Load and explore an AnnData object from an HDF5 (.h5ad) file."
+    )
+    parser.add_argument(
+        "adata_path",
+        type=str,
+        help="Path to the .h5ad file containing the AnnData object"
+    )
+    args = parser.parse_args()
+
+    print(f"Loading AnnData from: {args.adata_path}")
+    adata = sc.read_h5ad(args.adata_path)
+
+    #basic_exploration(adata)
+
+if __name__ == "__main__":
+    main()
