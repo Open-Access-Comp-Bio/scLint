@@ -17,6 +17,7 @@ This command only needs to run once, and it will install:
 - Python
 - Pandas
 - Numpy
+- Scanpy
 - Scipy
 - Jupyter notebook toolings
 
