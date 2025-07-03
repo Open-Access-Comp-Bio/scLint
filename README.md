@@ -20,6 +20,7 @@ This command only needs to run once, and it will install:
 - Scanpy
 - Scipy
 - Jupyter notebook toolings
+- Appropriate addons for the above
 
 ## Activate Environment
 
