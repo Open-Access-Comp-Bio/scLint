@@ -1,7 +1,7 @@
-from sc_parser_utility import (pool_files, id_files, open_files, create_anndata, anndata_out)
-import logging_messages
 from pathlib import Path
 import sys
+from scLint.sc_parser_utility import (pool_files, id_files, open_files, create_anndata, anndata_out)
+from scLint.logging_messages import(activate, log_file_handeling, caught_file_ext, bad_file)
 
 class scParser():
     def __init__(self, path:str, sep:str, logging:bool=False, save_data:bool = False, fname:str = None)->None:
@@ -14,7 +14,7 @@ class scParser():
         self.df_dicts = None
         self.adata = None
         if logging:
-            logging_messages.activate()
+            activate()
 
     def path_check(self)->None:
         """
@@ -23,16 +23,16 @@ class scParser():
         pathway = Path(self.path)
         check_presence = pathway.exists()
         if not check_presence:
-            logging_messages.s
+            bad_file(pathway)
             sys.exit()
         check_state = pathway.is_dir()
         if not check_state:
-            logging_messages.caught_file_ext()
+            caught_file_ext()
             sys.exit()
         # NOTE the True argument is a legacy/conceptual argument
         # the intent is that this tool can be used for a directory of
         # files and a small handfull that can be based through CLI manually
-        logging_messages.log_file_handeling(self.path, True)
+        log_file_handeling(self.path, True)
 
     def sort_files(self) -> None:
         self.sorted  =  pool_files(self.path)
@@ -50,3 +50,6 @@ class scParser():
     def jar_anndata(self):
         if self.save_data:
             anndata_out(self.adata, self.fname)
+    
+    def out_anndata(self):
+        return self.adata

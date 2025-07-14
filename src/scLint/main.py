@@ -1,5 +1,5 @@
 import argparse
-from sc_parser import scParser
+from scLint.sc_parser import scParser
 
 def arg_parser():
     """

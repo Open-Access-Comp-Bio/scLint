@@ -1,7 +1,4 @@
 import logging
-from pathlib import Path
-
-##### insert logging style customization here
 
 def activate() -> None:
     logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -34,7 +31,14 @@ def save_to_disk(var:str, fname:str):
 def success():
     logging.info('Operation was successful')
 
-def error(issue, issue_name, issue_handaling=None):
-    logging.error(f"There was an issue with {issue}, a {issue_name} was returned!")
-    if issue_handaling:
-        logging.info(issue_handaling)
+def error(issue, issue_name, error_type, issue_handeling=None):
+    logging.error(f"There was an issue with {issue}, a {issue_name} was produced!")
+    logging.error(f"The error was: {error_type}")
+    if issue_handeling:
+        logging.info(issue_handeling)
+
+def chunk_processing(chunk_index):
+    logging.info(f"Processing Chunk {chunk_index + 1}")
+
+def completed_processing(chunk_index):
+    logging.info(f"Completed Processing Chunk {chunk_index + 1}")
