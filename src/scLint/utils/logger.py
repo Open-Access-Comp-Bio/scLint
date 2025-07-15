@@ -10,6 +10,7 @@ class Issue:
         severity (str): Severity level ("ERROR" or "WARNING"). Defaults to "ERROR".
         source (str, optional): Optional identifier for the source of the issue (e.g., function name).
     """
+
     def __init__(self, message, severity="ERROR", source=None):
         """
         Initialize an Issue object.
@@ -70,6 +71,7 @@ class Logger:
         log_file (str): Optional path to a file where logs will be saved.
         issues (List[Issue]): Accumulated list of Issue instances.
     """
+
     def __init__(self, verbose=True, log_file=None):
         """
         Initialize the Logger.

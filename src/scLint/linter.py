@@ -17,18 +17,30 @@ from scLint.utils.logger import Logger, Issue
 
 
 DEFAULT_OBS_KEYS = [
-    "cell_type", "sample", "batch", "n_genes", "n_counts",
-    "percent_mito", "leiden", "condition"
+    "cell_type",
+    "sample",
+    "batch",
+    "n_genes",
+    "n_counts",
+    "percent_mito",
+    "leiden",
+    "condition",
 ]
 
 DEFAULT_VAR_KEYS = [
-    "gene_ids", "gene_symbols", "highly_variable", "means",
-    "dispersions", "mito", "chromosome"
+    "gene_ids",
+    "gene_symbols",
+    "highly_variable",
+    "means",
+    "dispersions",
+    "mito",
+    "chromosome",
 ]
 
 ##############################
 # Linting Rules
 ##############################
+
 
 def check_obs(adata, logger, required_keys=None):
     """
@@ -49,11 +61,18 @@ def check_obs(adata, logger, required_keys=None):
 
     for key in required_keys:
         if key not in adata.obs.columns:
-            logger.record_issue(Issue(f"Missing '{key}' in adata.obs", severity="ERROR", source="check_obs"))
+            logger.record_issue(
+                Issue(
+                    f"Missing '{key}' in adata.obs",
+                    severity="ERROR",
+                    source="check_obs",
+                )
+            )
 
     if adata.obs.isnull().any().any():
-        logger.record_issue(Issue("Missing values in adata.obs", severity="WARNING", source="check_obs"))
-
+        logger.record_issue(
+            Issue("Missing values in adata.obs", severity="WARNING", source="check_obs")
+        )
 
 
 def check_vars(adata, logger, required_keys=None):
@@ -75,10 +94,22 @@ def check_vars(adata, logger, required_keys=None):
 
     for key in required_keys:
         if key not in adata.var.columns:
-            logger.record_issue(Issue(f"Missing '{key}' in adata.var", severity="ERROR", source="check_vars"))
+            logger.record_issue(
+                Issue(
+                    f"Missing '{key}' in adata.var",
+                    severity="ERROR",
+                    source="check_vars",
+                )
+            )
 
     if adata.var.index.duplicated().any():
-        logger.record_issue(Issue("Duplicate gene indices in adata.var", severity="WARNING", source="check_vars"))
+        logger.record_issue(
+            Issue(
+                "Duplicate gene indices in adata.var",
+                severity="WARNING",
+                source="check_vars",
+            )
+        )
 
 
 def check_integrity(adata, logger):
@@ -89,22 +120,27 @@ def check_integrity(adata, logger):
         List[Issue]: Issues found related to matrix shape mismatches.
     """
     if adata.X.shape[0] != adata.obs.shape[0]:
-        logger.record_issue(Issue(
-            message="Mismatch between number of observations and rows in .X",
-            severity="ERROR",
-            source="check_integrity"
-        ))
+        logger.record_issue(
+            Issue(
+                message="Mismatch between number of observations and rows in .X",
+                severity="ERROR",
+                source="check_integrity",
+            )
+        )
     if adata.X.shape[1] != adata.var.shape[0]:
-        logger.record_issue(Issue(
-            message="Mismatch between number of variables and columns in .X",
-            severity="ERROR",
-            source="check_integrity"
-        ))
+        logger.record_issue(
+            Issue(
+                message="Mismatch between number of variables and columns in .X",
+                severity="ERROR",
+                source="check_integrity",
+            )
+        )
 
 
 ##############################
 # Core Linter Logic
 ##############################
+
 
 def run_linter(adata, logger):
     """
@@ -130,7 +166,7 @@ def print_report(issues, logger=None):
 
     Parameters:
         issues (List[Issue]): List of Issue instances to display.
-        logger (Logger, optional): Logger instance to handle output. 
+        logger (Logger, optional): Logger instance to handle output.
                                    If None, a default verbose logger is used.
     """
     if logger is None:
@@ -192,7 +228,7 @@ def basic_exploration(adata, output_dir=None):
 
     # Print summary stats
     print("\nQC Summary:")
-    print(adata.obs[['RNA.Counts', 'RNA.Features', 'Percent.MT']].describe())
+    print(adata.obs[["RNA.Counts", "RNA.Features", "Percent.MT"]].describe())
 
     # Plotting
     if output_dir:
@@ -202,30 +238,35 @@ def basic_exploration(adata, output_dir=None):
             sc.pl.violin,
             os.path.join(output_dir, "violin_qc.png"),
             adata,
-            ['RNA.Features', 'RNA.Counts', 'Percent.MT'],
+            ["RNA.Features", "RNA.Counts", "Percent.MT"],
             jitter=0.4,
-            multi_panel=True
+            multi_panel=True,
         )
 
         save_plot(
             sc.pl.scatter,
             os.path.join(output_dir, "scatter_counts_vs_mt.png"),
             adata,
-            x='RNA.Counts',
-            y='Percent.MT'
+            x="RNA.Counts",
+            y="Percent.MT",
         )
 
         save_plot(
             sc.pl.scatter,
             os.path.join(output_dir, "scatter_counts_vs_features.png"),
             adata,
-            x='RNA.Counts',
-            y='RNA.Features'
+            x="RNA.Counts",
+            y="RNA.Features",
         )
     else:
-        sc.pl.violin(adata, ['RNA.Features', 'RNA.Counts', 'Percent.MT'], jitter=0.4, multi_panel=True)
-        sc.pl.scatter(adata, x='RNA.Counts', y='Percent.MT')
-        sc.pl.scatter(adata, x='RNA.Counts', y='RNA.Features')
+        sc.pl.violin(
+            adata,
+            ["RNA.Features", "RNA.Counts", "Percent.MT"],
+            jitter=0.4,
+            multi_panel=True,
+        )
+        sc.pl.scatter(adata, x="RNA.Counts", y="Percent.MT")
+        sc.pl.scatter(adata, x="RNA.Counts", y="RNA.Features")
 
     # HVGs
     sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=2000)
@@ -234,7 +275,7 @@ def basic_exploration(adata, output_dir=None):
         save_plot(
             sc.pl.highly_variable_genes,
             os.path.join(output_dir, "highly_variable_genes.png"),
-            adata
+            adata,
         )
     else:
         sc.pl.highly_variable_genes(adata)
@@ -246,13 +287,10 @@ def basic_exploration(adata, output_dir=None):
 
     if output_dir:
         save_plot(
-            sc.pl.pca,
-            os.path.join(output_dir, "pca.png"),
-            adata,
-            color='RNA.Counts'
+            sc.pl.pca, os.path.join(output_dir, "pca.png"), adata, color="RNA.Counts"
         )
     else:
-        sc.pl.pca(adata, color='RNA.Counts')
+        sc.pl.pca(adata, color="RNA.Counts")
 
 
 def main():
@@ -269,22 +307,30 @@ def main():
 
     Exits with status 1 if linting errors are found.
     """
-    parser = argparse.ArgumentParser(description="Exploratory analysis of an AnnData object.")
+    parser = argparse.ArgumentParser(
+        description="Exploratory analysis of an AnnData object."
+    )
     parser.add_argument("adata_path", type=str, help="Path to .h5ad file")
     parser.add_argument(
-        "--output_dir", type=str, default=None,
-        help="If provided, plots will be saved there as PNGs instead of shown"
+        "--output_dir",
+        type=str,
+        default=None,
+        help="If provided, plots will be saved there as PNGs instead of shown",
     )
     parser.add_argument(
-        "--log_file", type=str, default=None,
-        help="Optional path to save log output to a file"
+        "--log_file",
+        type=str,
+        default=None,
+        help="Optional path to save log output to a file",
     )
     args = parser.parse_args()
 
     # Initialize logger
     logger = Logger(verbose=True, log_file=args.log_file)
 
-    logger.log(f"Loading AnnData from: {args.adata_path}", severity="INFO", source="main")
+    logger.log(
+        f"Loading AnnData from: {args.adata_path}", severity="INFO", source="main"
+    )
     try:
         adata = sc.read_h5ad(args.adata_path)
     except Exception as e:
@@ -299,7 +345,11 @@ def main():
 
     # Optionally exit with error if linting failed
     if logger.has_errors():
-        logger.log("Exiting with error status due to linting errors.", severity="ERROR", source="main")
+        logger.log(
+            "Exiting with error status due to linting errors.",
+            severity="ERROR",
+            source="main",
+        )
         exit(1)
 
 
