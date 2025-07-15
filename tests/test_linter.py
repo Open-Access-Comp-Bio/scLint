@@ -3,7 +3,6 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 from anndata import AnnData
-from unittest.mock import patch, PropertyMock
 
 from scLint.linter import (
     check_obs,
