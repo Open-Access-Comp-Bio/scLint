@@ -3,7 +3,12 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 
-from scLint.linter import *
+from scLint.linter import (
+    check_obs,
+    check_vars,
+    check_integrity,
+    run_linter
+)
 from scLint.utils.logger import Logger, Issue
 
 @pytest.fixture
@@ -63,7 +68,7 @@ def test_check_vars_valid(valid_adata, test_logger):
 
 def test_check_vars_missing_key(valid_adata, test_logger):
     valid_adata.var.drop(columns=["gene_ids"], inplace=True)
-    check_vars(valid_adata, logger=test_logger)
+    check_vars(valid_adata, logger=test_logger) # type: ignore
     assert any(i.message.startswith("Missing 'gene_ids'") for i in test_logger.issues)
 
 
