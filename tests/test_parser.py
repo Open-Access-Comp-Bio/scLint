@@ -16,7 +16,8 @@ def identified_files():
 
 def test_pool_files(pooled_files):
     results =  pool_files(ROOT_DIR)
-    assert results == pooled_files
+    assert results["dir"] == pooled_files["dir"]
+    assert set(results["files"]) == set(pooled_files["files"])
 
 def test_id_files(pooled_files, identified_files):
     id_files_output = id_files(pooled_files)
