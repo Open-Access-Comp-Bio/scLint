@@ -18,5 +18,6 @@ dependencies:
   - pytest
   - pip:
       - anndata
+      - "scanpy==1.11.3"
       - hdf5plugin
       - "zarr>=2.18.7,<3.0.0"
