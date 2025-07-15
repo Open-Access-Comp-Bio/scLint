@@ -17,8 +17,11 @@ This command only needs to run once, and it will install:
 - Python
 - Pandas
 - Numpy
+- Scanpy
 - Scipy
 - Jupyter notebook toolings
+- Appropriate addons for the above
+
 
 ## Activate Environment
 
@@ -45,63 +48,46 @@ Your input directory should contain:
 - Metadata files for cells and samples
 - Optional QC summary or label files
 
-## Usage [WILL NEED TO BE UPDATED AFTER MERGING COMPONENTS!!!]
+## Usage
+### Running the file parser and sorter
 ```
-python main.py <dir_path> [--sep <sep>] [--verbose] [--save] [--output <output_file>]
+scLint <dir_path> [--sep <sep>] [--verbose] [--save] [--output <output_file>]
+```
+### Running data QC
+```
+# TODO
+```
+### Running the full pipeline
+```
+# TODO
 ```
 ## Example Use Cases
 
 ### Basic usage (tab-delimited files):
 ```
-python sc_parser.py ./tests/collateral/scdata
+scLint ./tests/collateral/scdata
 ```
 
 ### Use comma-delimited input:
 ```
-python sc_parser.py ./tests/collateral/scdata --sep comma
+scLint ./tests/collateral/scdata --sep comma
 ```
 
 ### Save output to disk within running dir as `my_data.h5ad`:
 ```
-python sc_parser.py ./tests/collateral/scdata --save --output my_data
+scLint ./tests/collateral/scdata --save --output my_data
 ```
 
-### Save output to disk outside of running dir as my_data.h5ad1:
+### Save output to disk outside of running dir as `my_data.h5ad`:
 ```
-python sc_parser.py ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data
+scLint ./tests/collateral/scdata --save --output \Desired\Dir\to\store\my_data
 ```
 
 ### Full verbose run:
 ```
-python sc_parser.py ./tests/collateral/scdata --sep tab --verbose --save --output result
+scLint ./tests/collateral/scdata --sep tab --verbose --save --output result
 ```
 
 ## Notes
 - If `--save` is used without `--output`, the file will not be saved.
 - The tool currently assumes a specific structure for the input directory; future versions will include validation steps and automatic detection.
-
-## Preparing Environment
-
-If you haven't done so already, you can download the `environment.yml` file and run the following command below:
-
-
-```bash
-conda env create -f environment.yml
-```
-
-This command only needs to run once, and it will install:
-- Python
-- Pandas
-- Numpy
-- Scanpy
-- Scipy
-- Jupyter notebook toolings
-- Appropriate addons for the above
-
-## Activate Environment
-
-Make sure you have Conda installed. Then run:
-
-```bash
-conda activate sclint
-```
