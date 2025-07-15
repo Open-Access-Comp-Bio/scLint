@@ -16,9 +16,9 @@ class scParser():
         if logging:
             activate()
 
-    def path_check(self)->None:
+    def path_check(self) -> None:
         """
-        This function ensures the path given 
+        This function ensures the path given is valid.
         """
         pathway = Path(self.path)
         check_presence = pathway.exists()
@@ -35,21 +35,42 @@ class scParser():
         log_file_handeling(self.path, True)
 
     def sort_files(self) -> None:
+        """
+        All files are pooled from the given directory.
+        """
         self.sorted  =  pool_files(self.path)
 
-    def sort_content(self)->None:
+    def sort_content(self) -> None:
+        """
+        Files are sorted based on
+        nomencalture to the appropriate AnnData attribute.
+        """
         self.df_paths = id_files(self.sorted)
 
     def open_content(self)->None:
+        """
+        Files are opened up and modified based
+        on memory managementneeds.
+        """
         self.dict_dfs = open_files(self.df_paths, 
                                    sep=self.sep)
 
     def gen_anndata(self)->None:
+        """
+        AnnData Object is generated.
+        """
         self.adata = create_anndata(self.dict_dfs)
 
-    def jar_anndata(self):
+    def jar_anndata(self)->None:
+        """
+        If used the AnnData Object is stored
+        in a h5ad file for easy sharing
+        """
         if self.save_data:
             anndata_out(self.adata, self.fname)
     
-    def out_anndata(self):
+    def out_anndata(self)->None:
+        """
+        Returns the AnnData Object
+        """
         return self.adata

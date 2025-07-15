@@ -3,11 +3,7 @@ import pandas as pd
 import scipy.sparse as sp
 import anndata as ad
 from tests.parser_answers import ROOT_DIR, pool_files_ans, id_files_ans
-### NOTE temporary line to be replaced once the package is properally installed
-import sys
-sys.path.insert(1, '/Users/tanvirsaini/Documents/oacb/scLint/src/scLint/')
-### END OF NOTE
-from sc_parser_utility import pool_files, id_files, open_files, create_anndata
+from scLint.sc_parser_utility import pool_files, id_files, open_files, create_anndata
 
 
 @pytest.fixture
