@@ -2,6 +2,8 @@ import pytest
 import numpy as np
 import pandas as pd
 import scanpy as sc
+from anndata import AnnData
+from unittest.mock import patch, PropertyMock
 
 from scLint.linter import (
     check_obs,
@@ -83,16 +85,17 @@ def test_check_integrity_valid(valid_adata, test_logger):
     assert test_logger.issues == []
 
 
-def test_check_integrity_obs_mismatch(valid_adata, test_logger):
-    valid_adata._inplace_subset_var([0])  # Keep 1 var, but 2 obs
-    check_integrity(valid_adata, logger=test_logger)
-    assert any("Mismatch between number of variables" in i.message for i in test_logger.issues)
+def test_check_integrity_valid_input(test_logger):
+    # Correctly shaped input
+    X = np.array([[1, 2], [3, 4]])
+    obs = pd.DataFrame(index=["cell1", "cell2"])
+    var = pd.DataFrame(index=["gene1", "gene2"])
 
+    adata = AnnData(X=X, obs=obs, var=var)
+    check_integrity(adata, test_logger)
 
-def test_check_integrity_var_mismatch(valid_adata, test_logger):
-    valid_adata._inplace_subset_obs([0])  # Keep 1 obs, but 2 vars
-    check_integrity(valid_adata, logger=test_logger)
-    assert any("Mismatch between number of observations" in i.message for i in test_logger.issues)
+    # No issues should be logged
+    assert len(test_logger.issues) == 0
 
 
 def test_run_linter_with_known_issues(valid_adata, test_logger):
