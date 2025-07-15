@@ -31,6 +31,19 @@ DEFAULT_VAR_KEYS = [
 ##############################
 
 def check_obs(adata, logger, required_keys=None):
+    """
+    Check that required keys exist in `adata.obs` and that there are no missing values.
+
+    Parameters:
+        adata (AnnData): Annotated data object to inspect.
+        logger (Logger): Logger instance to record issues.
+        required_keys (list, optional): List of keys that must exist in `adata.obs`.
+                                        Defaults to standard `DEFAULT_OBS_KEYS`.
+
+    Records:
+        - ERROR if a required key is missing.
+        - WARNING if missing (NaN) values are found in `adata.obs`.
+    """
     if required_keys is None:
         required_keys = DEFAULT_OBS_KEYS
 
@@ -44,6 +57,19 @@ def check_obs(adata, logger, required_keys=None):
 
 
 def check_vars(adata, logger, required_keys=None):
+    """
+    Check that required keys exist in `adata.var` and that variable names are unique.
+
+    Parameters:
+        adata (AnnData): Annotated data object to inspect.
+        logger (Logger): Logger instance to record issues.
+        required_keys (list, optional): List of keys that must exist in `adata.var`.
+                                        Defaults to standard `DEFAULT_VAR_KEYS`.
+
+    Records:
+        - ERROR if a required key is missing.
+        - WARNING if duplicate variable (gene) indices exist.
+    """
     if required_keys is None:
         required_keys = DEFAULT_VAR_KEYS
 
@@ -126,7 +152,15 @@ def print_report(issues, logger=None):
 
 
 def save_plot(func, file_path, *args, **kwargs):
-    """Helper to save Scanpy plots with full control."""
+    """
+    Save a Scanpy plot to disk with consistent styling and tight layout.
+
+    Parameters:
+        func (callable): Scanpy plotting function (e.g., `sc.pl.violin`).
+        file_path (str): Destination path for the saved figure.
+        *args: Positional arguments passed to the plotting function.
+        **kwargs: Keyword arguments passed to the plotting function.
+    """
     with plt.rc_context():
         func(*args, show=False, **kwargs)
         plt.savefig(file_path, dpi=150, bbox_inches="tight")
@@ -134,6 +168,21 @@ def save_plot(func, file_path, *args, **kwargs):
 
 
 def basic_exploration(adata, output_dir=None):
+    """
+    Perform basic exploratory data analysis on an AnnData object.
+
+    This includes:
+        - Summary of `adata.obs` and `adata.var`
+        - QC metric calculation
+        - Violin and scatter plots for QC metrics
+        - Identification of highly variable genes (HVGs)
+        - PCA computation and visualization
+
+    Parameters:
+        adata (AnnData): Annotated data object to explore.
+        output_dir (str, optional): If specified, saves plots to this directory as PNGs.
+                                    Otherwise, displays plots interactively.
+    """
     print(adata)
     print("\nObs columns:", adata.obs.columns.tolist())
     print("Var columns:", adata.var.columns.tolist())
@@ -207,6 +256,19 @@ def basic_exploration(adata, output_dir=None):
 
 
 def main():
+    """
+    Command-line interface for running exploratory analysis and linting on an AnnData file.
+
+    Loads the .h5ad file, runs basic QC and visualization routines, performs linting checks,
+    and optionally saves plots and logs.
+
+    CLI Arguments:
+        adata_path (str): Path to .h5ad file.
+        --output_dir (str): Optional directory to save plots instead of displaying them.
+        --log_file (str): Optional log file to save linting output.
+
+    Exits with status 1 if linting errors are found.
+    """
     parser = argparse.ArgumentParser(description="Exploratory analysis of an AnnData object.")
     parser.add_argument("adata_path", type=str, help="Path to .h5ad file")
     parser.add_argument(
