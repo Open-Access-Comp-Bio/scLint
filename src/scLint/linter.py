@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from utils.logger import Issue
+from scLint.utils.logger import Logger, Issue
 
 
 # Using Tevino dataset as first test case
@@ -30,64 +30,57 @@ DEFAULT_VAR_KEYS = [
 # Linting Rules
 ##############################
 
-def check_obs(adata, required_keys=None):
+def check_obs(adata, logger, required_keys=None):
     if required_keys is None:
         required_keys = DEFAULT_OBS_KEYS
 
-    issues = []
     for key in required_keys:
         if key not in adata.obs.columns:
-            issues.append(Issue(f"Missing '{key}' in adata.obs", severity="ERROR", source="check_obs"))
+            logger.record_issue(Issue(f"Missing '{key}' in adata.obs", severity="ERROR", source="check_obs"))
 
     if adata.obs.isnull().any().any():
-        issues.append(Issue("Missing values in adata.obs", severity="WARNING", source="check_obs"))
-
-    return issues
+        logger.record_issue(Issue("Missing values in adata.obs", severity="WARNING", source="check_obs"))
 
 
-def check_vars(adata, required_keys=None):
+
+def check_vars(adata, logger, required_keys=None):
     if required_keys is None:
         required_keys = DEFAULT_VAR_KEYS
 
-    issues = []
     for key in required_keys:
         if key not in adata.var.columns:
-            issues.append(Issue(f"Missing '{key}' in adata.var", severity="ERROR", source="check_vars"))
+            logger.record_issue(Issue(f"Missing '{key}' in adata.var", severity="ERROR", source="check_vars"))
 
     if adata.var.index.duplicated().any():
-        issues.append(Issue("Duplicate gene indices in adata.var", severity="WARNING", source="check_vars"))
-
-    return issues
+        logger.record_issue(Issue("Duplicate gene indices in adata.var", severity="WARNING", source="check_vars"))
 
 
-def check_integrity(adata):
+def check_integrity(adata, logger):
     """
     Check consistency between adata.X, adata.obs, and adata.var.
 
     Returns:
         List[Issue]: Issues found related to matrix shape mismatches.
     """
-    issues = []
     if adata.X.shape[0] != adata.obs.shape[0]:
-        issues.append(Issue(
+        logger.record_issue(Issue(
             message="Mismatch between number of observations and rows in .X",
             severity="ERROR",
             source="check_integrity"
         ))
     if adata.X.shape[1] != adata.var.shape[0]:
-        issues.append(Issue(
+        logger.record_issue(Issue(
             message="Mismatch between number of variables and columns in .X",
             severity="ERROR",
             source="check_integrity"
         ))
-    return issues
 
 
 ##############################
 # Core Linter Logic
 ##############################
 
-def run_linter(adata):
+def run_linter(adata, logger):
     """
     Run a series of linting checks on an AnnData object.
 
@@ -98,40 +91,38 @@ def run_linter(adata):
         List[Issue]: A list of Issue objects found during checks.
     """
     rules = [check_obs, check_vars, check_integrity]
-    issues = []
     for rule in rules:
         try:
-            result = rule(adata)
-            issues.extend(result)
+            rule(adata, logger)
         except Exception as e:
-            issues.append(Issue(
-                message=str(e),
-                severity="ERROR",
-                source=rule.__name__
-            ))
-    return issues
+            logger.record_issue(Issue(str(e), severity="ERROR", source=rule.__name__))
 
 
-def print_report(issues):
+def print_report(issues, logger=None):
     """
-    Print a formatted linting report from Issue objects.
+    Output a formatted linting report using the provided logger.
 
     Parameters:
         issues (List[Issue]): List of Issue instances to display.
+        logger (Logger, optional): Logger instance to handle output. 
+                                   If None, a default verbose logger is used.
     """
+    if logger is None:
+        logger = Logger(verbose=True)
+
     if not issues:
-        print("No issues found in AnnData object.")
+        logger.log("No issues found in AnnData object.", severity="INFO")
         return
 
     errors = sum(1 for i in issues if i.is_error())
     warnings = sum(1 for i in issues if i.is_warning())
 
-    print(f" Linting complete: {len(issues)} issue(s) found")
-    print(f"   {errors} error(s)")
-    print(f"   {warnings} warning(s)\n")
+    logger.log(f" Linting complete: {len(issues)} issue(s) found", severity="INFO")
+    logger.log(f"   {errors} error(s)", severity="INFO")
+    logger.log(f"   {warnings} warning(s)\n", severity="INFO")
 
     for issue in issues:
-        print(f" - {issue}")
+        logger.record_issue(issue)
 
 
 def save_plot(func, file_path, *args, **kwargs):
@@ -214,6 +205,7 @@ def basic_exploration(adata, output_dir=None):
     else:
         sc.pl.pca(adata, color='RNA.Counts')
 
+
 def main():
     parser = argparse.ArgumentParser(description="Exploratory analysis of an AnnData object.")
     parser.add_argument("adata_path", type=str, help="Path to .h5ad file")
@@ -221,13 +213,33 @@ def main():
         "--output_dir", type=str, default=None,
         help="If provided, plots will be saved there as PNGs instead of shown"
     )
+    parser.add_argument(
+        "--log_file", type=str, default=None,
+        help="Optional path to save log output to a file"
+    )
     args = parser.parse_args()
 
-    # Load data
-    print(f"Loading AnnData from: {args.adata_path}")
-    adata = sc.read_h5ad(args.adata_path)
+    # Initialize logger
+    logger = Logger(verbose=True, log_file=args.log_file)
 
+    logger.log(f"Loading AnnData from: {args.adata_path}", severity="INFO", source="main")
+    try:
+        adata = sc.read_h5ad(args.adata_path)
+    except Exception as e:
+        logger.log(f"Failed to load AnnData: {e}", severity="ERROR", source="main")
+        return
+
+    # Run exploratory analysis and linting
     basic_exploration(adata, output_dir=args.output_dir)
+
+    issues = run_linter(adata, logger)
+    print_report(issues, logger)
+
+    # Optionally exit with error if linting failed
+    if logger.has_errors():
+        logger.log("Exiting with error status due to linting errors.", severity="ERROR", source="main")
+        exit(1)
+
 
 if __name__ == "__main__":
     main()
