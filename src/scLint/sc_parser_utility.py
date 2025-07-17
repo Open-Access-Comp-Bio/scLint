@@ -5,25 +5,40 @@ import anndata as ad
 import hdf5plugin
 import numpy as np
 import gc
-from scLint.logging_messages import (opening_file, assign_adata, success, save_to_disk, error, chunk_processing, completed_processing)
+from scLint.logging_messages import (
+    opening_file,
+    assign_adata,
+    success,
+    save_to_disk,
+    error,
+    chunk_processing,
+    completed_processing,
+)
 
-def pool_files(path:str)->dict:
+
+def pool_files(path: str) -> dict:
     """
     Input: path to a directory with files
     Output: dict witt with dict name (key)
     with a list of files (values)
     """
     path_object = Path(path)
-    path_entries = [entry for entry in path_object.iterdir() if entry.is_file() if entry.name != '.DS_Store']
-    path_dict = {'dir':path_object, 'files':path_entries}
+    path_entries = [
+        entry
+        for entry in path_object.iterdir()
+        if entry.is_file()
+        if entry.name != ".DS_Store"
+    ]
+    path_dict = {"dir": path_object, "files": path_entries}
     return path_dict
+
 
 # IT might be better to for go this and have the users input
 # all of the files they want to run or create an input template that
 # can be read instead. The second step seems like a good idea. maybe
 # we can attempt to run the automatted path but if an error occurs we can
 # ask for the metadata.
-def id_files(path_dict:dict)->dict:
+def id_files(path_dict: dict) -> dict:
     """
     This function takes in a dictionary and sorts the file paths
     from the input dictionary on what their corresponding AnnData
@@ -35,33 +50,42 @@ def id_files(path_dict:dict)->dict:
     # an assumption is made that all the files in
     # obs will be mergable with each other.
     identified_files = {}
-    identified_files['uns'] = []
-    for file_path in path_dict['files']:
+    identified_files["uns"] = []
+    for file_path in path_dict["files"]:
         name = str(Path(file_path).name).lower()  # safer than str(file_path)
         if "_spliced_counts" in name or "_spliced_cpm" in name:
             identified_files["spliced"] = file_path
         elif "_unspliced_counts" in name or "_unspliced_cpm" in name:
             identified_files["unspliced"] = file_path
-        elif (("raw" in name or "umi" in name) and ("_spliced_counts" not in name) and ("_unspliced_counts" not in name)):
+        elif (
+            ("raw" in name or "umi" in name)
+            and ("_spliced_counts" not in name)
+            and ("_unspliced_counts" not in name)
+        ):
             # NOTE + TODO Should we let the user predefine what X is? it reduces the guessing game by a bit, it would be
             # one additional argument, it could be optional instead of mandatory
             # NOTE found from doing additional research on the use of X
             # adata.X simply holds “the matrix you are currently analysing.”
-            # Whether that matrix is raw counts or normalised / log-transformed 
+            # Whether that matrix is raw counts or normalised / log-transformed
             # counts is entirely up to how you build the object.
             # NOTE + TODO maybe for our nomenclature we include "initial" in the nomenclature
-            identified_files['X'] = file_path
-        elif (("normalized_counts" in name or "cpm_" in name) and ("spliced" not in name) and ("unspliced" not in name)):
-            identified_files['normalized'] = file_path
+            identified_files["X"] = file_path
+        elif (
+            ("normalized_counts" in name or "cpm_" in name)
+            and ("spliced" not in name)
+            and ("unspliced" not in name)
+        ):
+            identified_files["normalized"] = file_path
         elif "cell_metadata" in name:
-            identified_files['obs'] = file_path
+            identified_files["obs"] = file_path
         elif "gene_metadata" in name:
-            identified_files['var'] = file_path
+            identified_files["var"] = file_path
         else:
-            identified_files['uns'].append(file_path)
+            identified_files["uns"].append(file_path)
     return identified_files
 
-def open_files(identified_files:dict, sep='\t'):
+
+def open_files(identified_files: dict, sep="\t"):
     """
     Input: A dict with identified files and their paths
     Output: dict with pandas DataFrames.
@@ -69,32 +93,37 @@ def open_files(identified_files:dict, sep='\t'):
     file_keys = identified_files.keys()
     for_anndata = {}
     for file_key in file_keys:
-        # TODO potentially move just the uns into a 
+        # TODO potentially move just the uns into a
         # a python so that way the code is a bit more
         # readable later on.
         file_paths = identified_files[file_key]
-        if file_key == 'uns':
+        if file_key == "uns":
             opening_file(file_key, file_list=file_paths)
             if len(file_paths) == 1:
-                opened_files = pd.read_csv(file_paths[0], sep=sep, index_col=0, dtype=str)
+                opened_files = pd.read_csv(
+                    file_paths[0], sep=sep, index_col=0, dtype=str
+                )
             else:
-                opened_files = [pd.read_csv(file_path, sep=sep, index_col=0, dtype=str) for 
-                                        file_path in file_paths
-                                        ]
-            for_anndata['uns'] = opened_files
+                opened_files = [
+                    pd.read_csv(file_path, sep=sep, index_col=0, dtype=str)
+                    for file_path in file_paths
+                ]
+            for_anndata["uns"] = opened_files
             continue
         # End logic adjustments for 'uns' data.
         opening_file(file_key, file_name=file_paths)
         # TODO encapsulate logic in the future
         # this is being done to allow complete control over the data handeling
         # versus using scanpay's sc.read_csv
-        if file_key in ['X','spliced_counts', 'unspliced_counts','normalized']:
+        if file_key in ["X", "spliced_counts", "unspliced_counts", "normalized"]:
             # TODO move to future function and add futuer arguments for chunksize controling
             # TODO FOLLOW THROUGH WITH CHUNKSIZE BUT DON'T DO SPARSE
             # DEL OLD VARIABLES FOR MEMORY MANAGMENT AND THEN TRY DO PD CONCAT
             chunksizes = 5000
-            cols_to_rm = {'cell_line', 'pool_id','Cell_line', 'Pool_ID'}
-            chunk_iterator = pd.read_csv(file_paths, sep=sep, chunksize=chunksizes, engine='c', index_col=0)
+            cols_to_rm = {"cell_line", "pool_id", "Cell_line", "Pool_ID"}
+            chunk_iterator = pd.read_csv(
+                file_paths, sep=sep, chunksize=chunksizes, engine="c", index_col=0
+            )
             sparse_chunks = []
             for index, df_chunk in enumerate(chunk_iterator):
                 chunk_processing(index)
@@ -110,7 +139,7 @@ def open_files(identified_files:dict, sep='\t'):
                 # once this is functionalized better we should do a memory
                 # comparison test for pd.DataFrame w/ dtypes of np.float32 vs
                 # sparse.csr_matrix. Which ever takes up less space in mem should be
-                # selected at least that's what I think. 
+                # selected at least that's what I think.
                 # df_chunk = sparse.csr_matrix(df_chunk.values)
                 sparse_chunks.append(df_chunk)
                 del df_chunk
@@ -119,16 +148,19 @@ def open_files(identified_files:dict, sep='\t'):
         else:
             df = pd.read_csv(file_paths, sep=sep, index_col=0, dtype=str)
         for_anndata[file_key] = df
-    if 'var' not in file_keys:
-        # TODO this will also need to be properly 
-        gene_symbols = for_anndata['X'].columns
-        for_anndata['var'] = pd.DataFrame(data=gene_symbols, columns=['gene_symbols'])
-    if 'obs' not in file_keys:
-        cell_ids = for_anndata['X'].index
-        for_anndata['obs'] = pd.DataFrame(data=cell_ids, columns=['cell_ids'])
+    if "var" not in file_keys:
+        # TODO this will also need to be properly
+        gene_symbols = for_anndata["X"].columns
+        for_anndata["var"] = pd.DataFrame(data=gene_symbols, columns=["gene_symbols"])
+    if "obs" not in file_keys:
+        cell_ids = for_anndata["X"].index
+        for_anndata["obs"] = pd.DataFrame(data=cell_ids, columns=["cell_ids"])
     return for_anndata
 
-def _anndata_helper(adata:ad.AnnData, data_type:str, data:pd.DataFrame) -> ad.AnnData:
+
+def _anndata_helper(
+    adata: ad.AnnData, data_type: str, data: pd.DataFrame
+) -> ad.AnnData:
     """
     AnnData helper function that helps dictate where the data
     should be assigned to.
@@ -139,24 +171,24 @@ def _anndata_helper(adata:ad.AnnData, data_type:str, data:pd.DataFrame) -> ad.An
     # TODO: Might want to set up a step where we check the dim of the data. easiest logic: ensure rows < columns.
     try:
         match data_type:
-            case 'obs':
+            case "obs":
                 layers = data.columns
                 for layer in layers:
                     adata.obs[layer] = data[[layer]]
-                    if layer == 'gene_symbols':
-                        adata_set_two.obs['gene_symbols'] = adata_set_two.var_names
+                    if layer == "gene_symbols":
+                        adata_set_two.obs["gene_symbols"] = adata_set_two.var_names
                     adata.obs = data
-            case 'var':
+            case "var":
                 adata.var = data
                 # if layer == 'gene_symbols'
                 #     adata_set_two.var['gene_symbols'] = adata_set_two.var_names
             # TODO fix this and ensure the aforementioneg logic is used
             # instead of this before next deployment.
-            case 'spliced':
-                adata.layers['spliced'] = data.T
-            case 'unspliced':
-                adata.layers['unspliced'] = data.T
-            case 'uns':
+            case "spliced":
+                adata.layers["spliced"] = data.T
+            case "unspliced":
+                adata.layers["unspliced"] = data.T
+            case "uns":
                 if isinstance(data, list):
                     for data_entry in data:
                         layer_value = len(adata.uns)
@@ -166,12 +198,12 @@ def _anndata_helper(adata:ad.AnnData, data_type:str, data:pd.DataFrame) -> ad.An
                     layer_name = f"layer_0"
                     adata.uns[layer_name] = data
             # TODO things that are left to manage -
-            # adata.obsm, adata.varm, adata.uns, adata.raw	
+            # adata.obsm, adata.varm, adata.uns, adata.raw
             # and if it’s cell-level (per row) then adata.obs["batch"] is needed
             # or if it’s global (e.g., sample-level, run config) then adata.uns["metadata"]
             # is needed
             case _:
-                #TODO WARNING AND RETURN 1
+                # TODO WARNING AND RETURN 1
                 pass
     except ValueError as ve:
         # NOTE determine if this is still an issue, should this be here?
@@ -190,20 +222,20 @@ def _anndata_helper(adata:ad.AnnData, data_type:str, data:pd.DataFrame) -> ad.An
         layer_name = f"layer_{layer_value}"
         adata.uns[layer_name] = data
     return adata
-            
 
-def create_anndata(opened_files:dict) -> ad.AnnData:
+
+def create_anndata(opened_files: dict) -> ad.AnnData:
     """
-    This function creates an AnnData object after the 
+    This function creates an AnnData object after the
     dictionary of file paths has the files opened.
 
     Input
         opened_files: dictionary of data structs, Pd.DataFrame, Sparse Matrix, etc etc...
-    Output 
+    Output
         AnnData Object
     """
     # TODO move key_priority into a config file
-    key_priority = {'X': 0, 'obs': 1, 'var': 2, 'metadata': 3}
+    key_priority = {"X": 0, "obs": 1, "var": 2, "metadata": 3}
     anndata_keys = sorted(opened_files.keys(), key=lambda k: key_priority.get(k, 100))
     for index, adata_key in enumerate(anndata_keys):
         data_df = opened_files[adata_key]
@@ -215,16 +247,17 @@ def create_anndata(opened_files:dict) -> ad.AnnData:
     success()
     return adata
 
-def anndata_out(adata:ad.AnnData, fname:str='anndata') -> None:
+
+def anndata_out(adata: ad.AnnData, fname: str = "anndata") -> None:
     """
     This function outputs an AnnData object to a h5ad file.
     The default file name if not provided is anndata.
-    
+
     Input
         adata: AnnData Object
         fname: optional, default name anndata
     """
-    fname += '.h5ad'
-    save_to_disk('anndata object', fname)
-    adata.write_h5ad(fname,compression=hdf5plugin.FILTERS["zstd"])
+    fname += ".h5ad"
+    save_to_disk("anndata object", fname)
+    adata.write_h5ad(fname, compression=hdf5plugin.FILTERS["zstd"])
     success()
