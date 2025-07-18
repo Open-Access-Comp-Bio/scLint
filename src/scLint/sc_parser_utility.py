@@ -48,7 +48,7 @@ def id_files(path_dict: dict) -> dict:
     # to simplify and scale file identification
     # biggest weak point is obs potentially
     # an assumption is made that all the files in
-    # obs will be mergable with each other.
+    # obs will be mergeable with each other.
     identified_files = {}
     identified_files["uns"] = []
     for file_path in path_dict["files"]:
@@ -113,12 +113,12 @@ def open_files(identified_files: dict, sep="\t"):
         # End logic adjustments for 'uns' data.
         opening_file(file_key, file_name=file_paths)
         # TODO encapsulate logic in the future
-        # this is being done to allow complete control over the data handeling
+        # this is being done to allow complete control over the data handling
         # versus using scanpay's sc.read_csv
         if file_key in ["X", "spliced_counts", "unspliced_counts", "normalized"]:
-            # TODO move to future function and add futuer arguments for chunksize controling
+            # TODO move to future function and add futuer arguments for chunksize controlling
             # TODO FOLLOW THROUGH WITH CHUNKSIZE BUT DON'T DO SPARSE
-            # DEL OLD VARIABLES FOR MEMORY MANAGMENT AND THEN TRY DO PD CONCAT
+            # DEL OLD VARIABLES FOR MEMORY MANAGEMENT AND THEN TRY DO PD CONCAT
             chunksizes = 5000
             cols_to_rm = {"cell_line", "pool_id", "Cell_line", "Pool_ID"}
             chunk_iterator = pd.read_csv(
@@ -217,7 +217,7 @@ def _anndata_helper(
         # the dictionary is still present
         error_name = type(ve).__name__
         alt_action = f'Storing data into "uns" instead of {data_type}'
-        error(data_type, error_name, ve, issue_handeling=alt_action)
+        error(data_type, error_name, ve, issue_handling=alt_action)
         layer_value = len(adata.uns)
         layer_name = f"layer_{layer_value}"
         adata.uns[layer_name] = data

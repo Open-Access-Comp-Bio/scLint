@@ -20,7 +20,7 @@ def arg_parser():
     parser.add_argument(
         "--sep",
         default="tab",
-        help="Deliminator/seperator used throughout the files within dir_path. Default is tab.",
+        help="Deliminator/separatorused throughout the files within dir_path. Default is tab.",
     )
     parser.add_argument(
         "--verbose", action="store_true", help="Print progress messages."
@@ -48,7 +48,7 @@ def main():
     translate_sep = {"comma": ",", "tab": "\t"}
     if sep not in translate_sep:
         raise ValueError(
-            f"Provided seperator {sep} is not supported. Use either comma or tab."
+            f"Provided separator{sep} is not supported. Use either comma or tab."
         )
     run_parser = scParser(path, translate_sep[sep], verbose, save, output)
     run_parser.path_check()
