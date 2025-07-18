@@ -50,7 +50,7 @@ class scParser:
             sys.exit()
         # NOTE the True argument is a legacy/conceptual argument
         # the intent is that this tool can be used for a directory of
-        # files and a small handfull that can be based through CLI manually
+        # files and a small handful that can be based through CLI manually
         log_file_handeling(self.path, True)
 
     def sort_files(self) -> None:
