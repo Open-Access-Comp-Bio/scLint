@@ -1,7 +1,8 @@
+import os
 from pathlib import PosixPath
 from pathlib import Path
 
-ROOT_DIR = Path.cwd() / "tests" / "collateral" / "scdata"
+ROOT_DIR = Path(__file__).parent.resolve() / "tests" / "collateral" / "scdata"
 pool_files_ans = {
     "dir": PosixPath(ROOT_DIR),
     "files": [
