@@ -7,7 +7,7 @@ def activate() -> None:
     )
 
 
-def log_file_handeling(path: str, is_dir: bool) -> None:
+def log_file_handling(path: str, is_dir: bool) -> None:
     # This function was initially built to be flexible to user needs
     # the user could pass either a single file or a directory of files.
     dobject = {True: "directory", False: "file"}

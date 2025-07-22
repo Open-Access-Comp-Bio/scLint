@@ -1,18 +1,8 @@
 from pathlib import Path
 import sys
-from scLint.sc_parser_utility import (
-    pool_files,
-    id_files,
-    open_files,
-    create_anndata,
-    anndata_out,
-)
-from scLint.logging_messages import (
-    activate,
-    log_file_handeling,
-    caught_file_ext,
-    bad_file,
-)
+from scLint.sc_parser_utility import pool_files, id_files, open_files, create_anndata, anndata_out
+    
+from scLint.logging_messages import activate, log_file_handling, caught_file_ext, bad_file
 
 
 class scParser:
@@ -51,7 +41,7 @@ class scParser:
         # NOTE the True argument is a legacy/conceptual argument
         # the intent is that this tool can be used for a directory of
         # files and a small handful that can be based through CLI manually
-        log_file_handeling(self.path, True)
+        log_file_handling(self.path, True)
 
     def sort_files(self) -> None:
         """
