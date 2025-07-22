@@ -46,11 +46,11 @@ def success():
     logging.info("Operation was successful")
 
 
-def error(issue, issue_name, error_type, issue_handeling=None):
+def error(issue, issue_name, error_type, issue_handling=None):
     logging.error(f"There was an issue with {issue}, a {issue_name} was produced!")
     logging.error(f"The error was: {error_type}")
-    if issue_handeling:
-        logging.info(issue_handeling)
+    if issue_handling:
+        logging.info(issue_handling)
 
 
 def chunk_processing(chunk_index):
