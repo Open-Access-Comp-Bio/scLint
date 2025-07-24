@@ -13,26 +13,28 @@ include = ["scLint*"]
 name = "scLint"
 version = "0.0.1"
 authors = [
-  { name="Steve Cheney", email="scheney.cb@gmail.com" },
-  { name="Tanvir Saini", email="tanvirxsaini@gmail.com" },
+  { name = "Steve Cheney", email = "scheney.cb@gmail.com" },
+  { name = "Tanvir Saini", email = "tanvirxsaini@gmail.com" }
 ]
-description = "A small example package"
+description = "A linter tool for validating Scanpy AnnData objects"
 readme = "README.md"
 requires-python = ">=3.11.11"
+license = { text = "Apache-2.0" }
 classifiers = [
-    "Programming Language :: Python :: 3",
-    "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: Apache Software License",
+  "Operating System :: OS Independent"
 ]
-license = "Apache-2.0"
-license-files = ["LICEN[CS]E*"]
 
 dependencies = [
+
     "numpy==2.2.5",
     "pandas==2.2.3",
     "ipykernel==6.29.5",
     "matplotlib==3.10.3",
     "matplotlib-inline==0.1.7",
     "scipy==1.15.2",
+    "scanpy==1.11.3",
     "seaborn==0.13.2",
     "scikit-learn==1.7.0",
     "anndata",
@@ -42,11 +44,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "pytest",
-    "black",
-    "black[jupyter]",
-    "codespell"
-    ]
+  "pytest",
+  "black",
+  "black[jupyter]",
+  "codespell"
+]
+
+[project.scripts]
+sclint = "scLint.linter:main"
 
 [project.urls]
 Homepage = "https://github.com/Open-Access-Comp-Bio/scLint"
