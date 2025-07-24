@@ -164,18 +164,9 @@ def _anndata_helper(
     try:
         match data_type:
             case "obs":
-                layers = data.columns
-                for layer in layers:
-                    adata.obs[layer] = data[[layer]]
-                    if layer == "gene_symbols":
-                        adata_set_two.obs["gene_symbols"] = adata_set_two.var_names
-                    adata.obs = data
+                adata.obs = data
             case "var":
                 adata.var = data
-                # if layer == 'gene_symbols'
-                #     adata_set_two.var['gene_symbols'] = adata_set_two.var_names
-            # TODO fix this and ensure the aforementioneg logic is used
-            # instead of this before next deployment.
             case "spliced":
                 adata.layers["spliced"] = data.T
             case "unspliced":
@@ -185,7 +176,7 @@ def _anndata_helper(
                     for data_entry in data:
                         layer_value = len(adata.uns)
                         layer_name = f"layer_{layer_value}"
-                        adata.uns[layer_name] = data
+                        adata.uns[layer_name] = data[data_entry]
                 else:
                     layer_name = f"layer_0"
                     adata.uns[layer_name] = data
