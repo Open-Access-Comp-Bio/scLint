@@ -3,12 +3,20 @@ import pandas as pd
 import anndata as ad
 import hdf5plugin
 import numpy as np
-from scLint.logging_messages import opening_file, assign_adata, success, save_to_disk, error, chunk_processing, completed_processing
+from scLint.logging_messages import (
+    opening_file,
+    assign_adata,
+    success,
+    save_to_disk,
+    error,
+    chunk_processing,
+    completed_processing,
+)
 import configparser
 
 CONFIG = configparser.ConfigParser()
-CONFIG.read(Path(__file__).parent.resolve() / '../../config.ini')
-CHUNKSIZES = int(CONFIG['data.handling']['CHUNKSIZES'])
+CONFIG.read(Path(__file__).parent.resolve() / "../../config.ini")
+CHUNKSIZES = int(CONFIG["data.handling"]["CHUNKSIZES"])
 
 
 def pool_files(path: str) -> dict:
