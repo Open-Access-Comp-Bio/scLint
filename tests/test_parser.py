@@ -2,8 +2,12 @@ import pytest
 import pandas as pd
 import scipy.sparse as sp
 import anndata as ad
-from tests.parser_answers import ROOT_DIR, pool_files_ans, id_files_ans
+from pathlib import PosixPath
+from pathlib import Path
+from tests.parser_answers import pool_files_ans, id_files_ans
 from scLint.sc_parser_utility import pool_files, id_files, open_files, create_anndata
+
+ROOT_DIR = Path(__file__).parent.resolve() / "collateral" / "scdata"
 
 
 @pytest.fixture
