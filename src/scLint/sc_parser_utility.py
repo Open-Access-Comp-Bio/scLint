@@ -5,15 +5,7 @@ import anndata as ad
 import hdf5plugin
 import numpy as np
 import gc
-from scLint.logging_messages import (
-    opening_file,
-    assign_adata,
-    success,
-    save_to_disk,
-    error,
-    chunk_processing,
-    completed_processing,
-)
+from scLint.logging_messages import opening_file, assign_adata, success, save_to_disk, error, chunk_processing, completed_processing
 
 
 def pool_files(path: str) -> dict:
