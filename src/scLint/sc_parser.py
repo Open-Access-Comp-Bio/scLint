@@ -14,6 +14,13 @@ class scParser:
         save_data: bool = False,
         fname: str = None,
     ) -> None:
+         # assert input types
+        assert isinstance(path, str), f"path must be a str, got {type(path).__name__}"
+        assert isinstance(sep, str), f"sep must be a str, got {type(sep).__name__}"
+        assert isinstance(logging, bool), f"logging must be a bool, got {type(logging).__name__}"
+        assert isinstance(save_data, bool), f"save_data must be a bool, got {type(save_data).__name__}"
+        assert fname is None or isinstance(fname, str), f"fname must be a str or None, got {type(fname).__name__}"
+        
         self.path = path
         self.sep = sep
         self.save_data = save_data

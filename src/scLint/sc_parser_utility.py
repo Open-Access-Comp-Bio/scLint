@@ -1,11 +1,14 @@
 from pathlib import Path
-from scipy import sparse
 import pandas as pd
 import anndata as ad
 import hdf5plugin
 import numpy as np
-import gc
 from scLint.logging_messages import opening_file, assign_adata, success, save_to_disk, error, chunk_processing, completed_processing
+import configparser
+
+CONFIG = configparser.ConfigParser()
+CONFIG.read(Path(__file__).parent.resolve() / '../../config.ini')
+CHUNKSIZES = int(CONFIG['data.handling']['CHUNKSIZES'])
 
 
 def pool_files(path: str) -> dict:
@@ -77,7 +80,7 @@ def id_files(path_dict: dict) -> dict:
     return identified_files
 
 
-def open_files(identified_files: dict, sep="\t"):
+def open_files(identified_files: dict, sep="\t", chunksizes=CHUNKSIZES):
     """
     Input: A dict with identified files and their paths
     Output: dict with pandas DataFrames.
@@ -111,7 +114,6 @@ def open_files(identified_files: dict, sep="\t"):
             # TODO move to future function and add futuer arguments for chunksize controlling
             # TODO FOLLOW THROUGH WITH CHUNKSIZE BUT DON'T DO SPARSE
             # DEL OLD VARIABLES FOR MEMORY MANAGEMENT AND THEN TRY DO PD CONCAT
-            chunksizes = 5000
             cols_to_rm = {"cell_line", "pool_id", "Cell_line", "Pool_ID"}
             chunk_iterator = pd.read_csv(
                 file_paths, sep=sep, chunksize=chunksizes, engine="c", index_col=0
@@ -173,10 +175,13 @@ def _anndata_helper(
                 adata.layers["unspliced"] = data.T
             case "uns":
                 if isinstance(data, list):
+                    # TODO THIS SECTION NEEDS TO BE REVISED
+                    # if data_entry is used, it causes the pytest
+                    # to fail!!!
                     for data_entry in data:
                         layer_value = len(adata.uns)
                         layer_name = f"layer_{layer_value}"
-                        adata.uns[layer_name] = data[data_entry]
+                        adata.uns[layer_name] = data
                 else:
                     layer_name = f"layer_0"
                     adata.uns[layer_name] = data

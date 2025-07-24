@@ -51,13 +51,31 @@ def main():
             f"Provided separator{sep} is not supported. Use either comma or tab."
         )
     run_parser = scParser(path, translate_sep[sep], verbose, save, output)
-    run_parser.path_check()
-    run_parser.sort_files()
-    run_parser.sort_content()
-    run_parser.open_content()
-    run_parser.gen_anndata()
+    try:
+        run_parser.path_check()
+    except:
+        raise Exception("Something went wrong!")
+    try:
+        run_parser.sort_files()
+    except:
+        raise Exception("Something went wrong!")
+    try:
+        run_parser.sort_content()
+    except:
+        raise Exception("Something went wrong!")
+    try:
+        run_parser.open_content()
+    except:
+        raise Exception("Something went wrong!")
+    try:
+        run_parser.gen_anndata()
+    except:
+        raise Exception("Something went wrong!")
     if save:
-        run_parser.jar_anndata()
+        try:
+            run_parser.jar_anndata()
+        except:
+            raise Exception("Something went wrong!")
 
 
 if __name__ == "__main__":
