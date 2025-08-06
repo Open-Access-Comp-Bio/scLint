@@ -13,6 +13,10 @@ from scLint.logging_messages import (
     completed_processing,
 )
 import configparser
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+warnings.simplefilter(action='ignore', category=pd.errors.DtypeWarning)
+
 
 CONFIG = configparser.ConfigParser()
 CONFIG.read(Path(__file__).parent.resolve() / "../../config.ini")
@@ -157,7 +161,23 @@ def open_files(identified_files: dict, sep="\t", chunksizes=CHUNKSIZES):
     if "obs" not in file_keys:
         cell_ids = for_anndata["X"].index
         for_anndata["obs"] = pd.DataFrame(data=cell_ids, columns=["cell_ids"])
+    # NOTE move the next lines of code into a function
     return for_anndata
+
+def dimensionality_check(for_anndata:dict)->dict:
+    # shape returns a tuple of rows x columns
+    count_matrix = for_anndata["X"].shape
+    # obs counts are rows
+    obs_count = for_anndata["obs"].shape
+    # var counts are columns
+    var_count = for_anndata["var"].shape
+    if obs_count != counts_matrix[1]:
+        valid_obs = for_anndata["obs"].iloc[:, 0]
+        for_anndata["X"] = for_anndata["X"].isin(valid_obs)
+    if var_count != counts_matrix[0]:
+        valid_vars = for_anndata["var"].iloc[:, 0]
+        for_anndata["X"] = for_anndata["X"].loc[:, for_anndata["X"].columns.isin(valid_vars)]
+    return anndata_dict
 
 
 def _anndata_helper(
@@ -174,8 +194,17 @@ def _anndata_helper(
     try:
         match data_type:
             case "obs":
+                # NOTE should this be it's own function?
+                # this should probably get a logging message
+                data_cols = data.columns
+                for data_col in data_cols:
+                    try: 
+                        data[data_col] = data[data_col].astype(float)
+                    except ValueError:
+                        data[data_col] = data[data_col].astype(str)
                 adata.obs = data
             case "var":
+                data = data.astype(str)
                 adata.var = data
             case "spliced":
                 adata.layers["spliced"] = data.T
@@ -216,6 +245,8 @@ def _anndata_helper(
         error(data_type, error_name, ve, issue_handling=alt_action)
         layer_value = len(adata.uns)
         layer_name = f"layer_{layer_value}"
+        # NOTE unstructured must be ONE DATA TYPE
+        data = data.astype(str)
         adata.uns[layer_name] = data
     return adata
 
