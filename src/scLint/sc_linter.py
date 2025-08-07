@@ -8,7 +8,7 @@ Why I think it's useful, easier to read through the code.
 
 # TODO inquire if exploration should be in scLint --> Fundamentally what is a linter for?
 # TODO inquire if checking vars and obs is necessary --> Does this answer the above?
-# TODO inquire do we need an scExplore class? --> Or is scLinter and scExplorer the same?
+# TODO inquire do we need an scExplore class? --> Or is scLinter and scExplorer the same? --> Not needed scLinter should do standard QC
 
 class scLinter:
     def __init__(self,inspect_cols:list,adata_file=None,adata_var=None):
