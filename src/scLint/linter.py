@@ -6,37 +6,17 @@ import scanpy as sc
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from scLint.utils.logger import Logger, Issue
-
+from scLint.utils.config_loader import get_config
 
 # Using Tevino dataset as first test case
 ##############################
 # Global Vars and Classes
 ##############################
-
-
-DEFAULT_OBS_KEYS = [
-    "cell_id",
-    #"cell_type",
-    #"sample",
-    #"batch",
-    #"n_genes",
-    #"n_counts",
-    #"percent_mito",
-    #"leiden",
-    #"condition",
-]
-
-DEFAULT_VAR_KEYS = [
-    #"gene_ids",
-    "gene_symbols",
-    #"highly_variable",
-    #"means",
-    #"dispersions",
-    #"mito",
-    #"chromosome",
-]
+DEFAULT_OBS_KEYS = get_config().items("obs.keys")
+DEFAULT_VAR_KEYS = get_config().items("var.keys")
 
 ##############################
 # Linting Rules
