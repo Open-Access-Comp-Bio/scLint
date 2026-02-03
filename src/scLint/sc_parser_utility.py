@@ -18,7 +18,8 @@ from scLint.utils.config_loader import load_config
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=pd.errors.DtypeWarning)
 
-CHUNKSIZES = int(load_config()["data.handling"]["CHUNKSIZES"])
+config = load_config()
+CHUNKSIZES = config.getint("data.handling", "CHUNKSIZES")
 
 
 
