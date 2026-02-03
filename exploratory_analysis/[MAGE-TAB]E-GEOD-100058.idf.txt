@@ -1,0 +1,32 @@
+MAGE-TAB Version	1.1					
+Experiment Description	How a neuronal cell type is defined and how this relates to its transcriptome are still open questions. The Drosophila olfactory projection neurons (PNs) are among the bestcharacterized neuronal types: Different PN classes target dendrites to distinct olfactory glomeruli and PNs of the same class exhibit indistinguishable anatomical and physiological properties. Using single-cell RNA-sequencing, we comprehensively characterized the transcriptomes of 40 PN classes and unequivocally identified transcriptomes for 6 classes. We found a new lineage-specific transcription factor that instructs PN dendrite targeting. Transcriptomes of closely-related PN classes exhibit the largest difference during circuit assembly, but become indistinguishable in adults, suggesting that neuronal subtype diversity peaks during development. Genes encoding transcription factors and cell-surface molecules are the most differentially expressed, indicating their central roles in specifying neuronal identity. Finally, we show that PNs use highly redundant combinatorial molecular codes to distinguish subtypes, enabling robust specification of cell identity and circuit assembly. Single-cell RNA-seq					
+Investigation Title	Single-cell RNA-seq analysis of Drosophila olfactory projection neurons					
+Public Release Date	2017-10-21					
+Experimental Factor Name	single cell identifier	cell type				
+Experimental Factor Type	single cell identifier	cell type				
+Publication Title	Classifying Drosophila Olfactory Projection Neuron Subtypes by Single-Cell RNA Sequencing.					
+Publication Author List	Li H, Horns F, Wu B, Xie Q, Li J, Li T, Luginbuhl DJ, Quake SR, Luo L					
+PubMed ID	29149607					
+Publication DOI	10.1016/j.cell.2017.10.019					
+Person Last Name	Horns	Horns				
+Person First Name	Felix	Felix				
+Person Email	rfhorns@stanford.edu					
+Person Affiliation	Stanford University					
+Person Address	Bioengineering, Stanford University, Clark Center E300, Quake Lab, Stanford, CA, USA					
+Person Roles	submitter					
+Term Source Name	ArrayExpress	EFO				
+Term Source File	http://www.ebi.ac.uk/arrayexpress/	http://www.ebi.ac.uk/efo/efo.owl				
+Protocol Name	P-GSE100058-1	P-GSE100058-2	P-GSE100058-3	P-GSE100058-4	P-GSE100058-5	P-GSE100058-6
+Protocol Description	In all experiments, both male and female flies were used. The following fly lines were used in this study: Mz19-GAL4 (BL#34497) (Jefferis et al., 2004), C15-RNAi (line1, BL#27649), C15-RNAi (line2, BL#35018), Alrm-GAL4 (BL# 67032). Mz19-QF (Hong et al., 2012), GH146-GAL4 (Stocker et al., 1997), UAS-STOP-mCD8GFP (Hong et al., 2009), GH146-Flp (Potter et al., 2010), trol-GAL4 (NP5103-GAL4, Kyoto Stock Center #113584), UAS-C15 (gift from Dr. Gerard Campbell) (Campbell, 2005) and 91G04-GAL4 (gift from Gerry Rubin) (Jenett et al., 2012).	Drosophila brains with mCD8GFP-labeled cells using GAL4 drivers were manually dissected and optic lobes were removed.	Single cell suspension were prepared following Tan et al (2015). Single labeled cells were sorted via Fluorescence Activated Cell Sorting (FACS) into individual wells of 96-well plates containing lysis buffer using an SH800 instrument (Sony Biotechnology)	Sequencing libraries were prepared following the smart-seq2 protocol (Picelli et al, 2014) with several modifications. To increase cDNA yield and detection efficiency, we increased the number of PCR cycles to 25. To reduce the amount of primer dimer PCR artifacts, we digested the reverse-transcribed first-strand cDNA using lambda exonuclease (New England Biolabs) (37°C for 30 min) prior to PCR amplification.	Sequencing was performed using Illumina Nextseq 500 platform with paired-end 75 bp reads	Library strategy: 5’ RACE RNA-seq alignment (STAR 2.4.2a, ENCODE standard options, except --outFilterScoreMinOverLread 0.4 --outFilterMatchNminOverLread 0.4 -- outFilterMismatchNmax 999 --outFilterMismatchNoverLmax 0.04) gene count (HTSeq-count 0.7.1, default options, except -m intersection-strict) Genome_build: Dmel r6.10 Supplementary_files_format_and_content: htseq.tab (gene counts), STAR.tab (summary of mapping results), df_libs.csv (sample information)
+Protocol Type	sample collection protocol	dissection protocol	single cell isolation protocol	single cell library construction protocol	single cell sequencing protocol	normalization data transformation protocol
+Comment[SecondaryAccession]	GSE100058	SRP109266				
+Comment[GEOReleaseDate]	2017-10-21					
+Comment[GEOLastUpdateDate]	2018-01-24					
+Comment[AEExperimentType]	RNA-seq of coding RNA from single cells					
+Comment[SequenceDataURI]	http://www.ebi.ac.uk/ena/data/view/SRR5685313-SRR5687154					
+Comment[ExpressionAtlasAccession]	E-GEOD-100058					
+Comment[EAExperimentType]	baseline					
+Comment[EAExpectedClusters]	12					
+Comment[EAAdditionalAttributes]	genotype					
+Comment[EACurator]	Laura Huerta					
+SDRF File	E-GEOD-100058.sdrf.txt					
