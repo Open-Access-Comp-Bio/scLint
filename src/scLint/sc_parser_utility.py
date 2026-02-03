@@ -3,6 +3,7 @@ import pandas as pd
 import anndata as ad
 import hdf5plugin
 import numpy as np
+import warnings
 from scLint.logging_messages import (
     opening_file,
     assign_adata,
@@ -12,16 +13,13 @@ from scLint.logging_messages import (
     chunk_processing,
     completed_processing,
 )
-import configparser
-import warnings
+from scLint.utils.config_loader import load_config
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 warnings.simplefilter(action="ignore", category=pd.errors.DtypeWarning)
 
+CHUNKSIZES = int(load_config()["data.handling"]["CHUNKSIZES"])
 
-CONFIG = configparser.ConfigParser()
-CONFIG.read(Path(__file__).parent.resolve() / "../../config.ini")
-CHUNKSIZES = int(CONFIG["data.handling"]["CHUNKSIZES"])
 
 
 def pool_files(path: str) -> dict:
