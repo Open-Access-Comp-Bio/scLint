@@ -22,7 +22,7 @@ def arg_parser():
     )
     parser.add_argument(
         "action",
-        choices=["parse","lint","full"],
+        choices=["parse", "lint", "full"],
         help="Required. Select to parse data, lint data, or to run the complete pipeline.",
     )
     parser.add_argument(
@@ -54,10 +54,9 @@ def arg_parser():
         "--output_plots",
         type=str,
         default=None,
-        help="Output directory for saving QC plots."
-
+        help="Output directory for saving QC plots.",
     )
-    # add argument to print report 
+    # add argument to print report
     return parser.parse_args()
 
 
@@ -77,9 +76,13 @@ def main():
             f"Provided separator{sep} is not supported. Use either comma or tab."
         )
     run_parser = scParser(path, translate_sep[sep], verbose, save, output_anndata)
-    parser_workflow = [run_parser.path_check, run_parser.sort_files,
-                       run_parser.sort_content,run_parser.open_content]
-    if action in ["parse","full"]:
+    parser_workflow = [
+        run_parser.path_check,
+        run_parser.sort_files,
+        run_parser.sort_content,
+        run_parser.open_content,
+    ]
+    if action in ["parse", "full"]:
         for step in parser_workflow:
             try:
                 step()
@@ -90,21 +93,24 @@ def main():
                 run_parser.jar_anndata()
             except:
                 raise Exception("Something went wrong!")
-        adata = run_parser.out_anndata() 
-    if action in ["lint","full"]:
+        adata = run_parser.out_anndata()
+    if action in ["lint", "full"]:
         if verbose:
             logger = Logger(verbose=verbose)
         if h5ad:
             try:
                 adata = sc.read_h5ad(h5ad)
             except Exception as e:
-                logger.log(f"Failed to load AnnData: {e}", severity="ERROR", source="main")
+                logger.log(
+                    f"Failed to load AnnData: {e}", severity="ERROR", source="main"
+                )
                 return
         # run sclinter
         # Run exploratory analysis and linting
         basic_exploration(adata, output_dir=output_plots)
         issues = run_linter(adata, logger)
         print_report(issues, logger)
+
 
 if __name__ == "__main__":
     main()

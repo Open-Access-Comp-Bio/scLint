@@ -322,7 +322,7 @@ def main():
     logger.log(
         f"Loading AnnData from: {args.adata_path}", severity="INFO", source="main"
     )
-    #===========
+    # ===========
     try:
         adata = sc.read_h5ad(args.adata_path)
     except Exception as e:

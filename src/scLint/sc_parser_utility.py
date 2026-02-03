@@ -14,8 +14,9 @@ from scLint.logging_messages import (
 )
 import configparser
 import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-warnings.simplefilter(action='ignore', category=pd.errors.DtypeWarning)
+
+warnings.simplefilter(action="ignore", category=FutureWarning)
+warnings.simplefilter(action="ignore", category=pd.errors.DtypeWarning)
 
 
 CONFIG = configparser.ConfigParser()
@@ -164,7 +165,8 @@ def open_files(identified_files: dict, sep="\t", chunksizes=CHUNKSIZES):
     # NOTE move the next lines of code into a function
     return for_anndata
 
-def dimensionality_check(for_anndata:dict)->dict:
+
+def dimensionality_check(for_anndata: dict) -> dict:
     # shape returns a tuple of rows x columns
     count_matrix = for_anndata["X"].shape
     # obs counts are rows
@@ -176,7 +178,9 @@ def dimensionality_check(for_anndata:dict)->dict:
         for_anndata["X"] = for_anndata["X"].isin(valid_obs)
     if var_count != counts_matrix[0]:
         valid_vars = for_anndata["var"].iloc[:, 0]
-        for_anndata["X"] = for_anndata["X"].loc[:, for_anndata["X"].columns.isin(valid_vars)]
+        for_anndata["X"] = for_anndata["X"].loc[
+            :, for_anndata["X"].columns.isin(valid_vars)
+        ]
     return anndata_dict
 
 
@@ -198,7 +202,7 @@ def _anndata_helper(
                 # this should probably get a logging message
                 data_cols = data.columns
                 for data_col in data_cols:
-                    try: 
+                    try:
                         data[data_col] = data[data_col].astype(float)
                     except ValueError:
                         data[data_col] = data[data_col].astype(str)
