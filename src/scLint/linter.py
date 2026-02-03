@@ -15,8 +15,9 @@ from scLint.utils.config_loader import get_config
 ##############################
 # Global Vars and Classes
 ##############################
-DEFAULT_OBS_KEYS = get_config().items("obs.keys")
-DEFAULT_VAR_KEYS = get_config().items("var.keys")
+
+DEFAULT_OBS_KEYS = [v for v in get_config("obs.keys").values() if v is not None]
+DEFAULT_VAR_KEYS = [v for v in get_config("var.keys").values() if v is not None]
 
 ##############################
 # Linting Rules

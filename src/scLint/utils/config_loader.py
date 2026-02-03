@@ -14,6 +14,21 @@ def load_config(path:os.PathLike | str | None = None) -> configparser.ConfigPars
         raise FileNotFoundError(f"Config not found: {config_path}")
     return config
 
-def get_config(section: str) -> dict[str, str]:
+def get_config(section: str) -> dict[str, str | None]:
     config = load_config()
-    return dict(config.items(section))
+    out: dict[str, str | None] = {}
+
+    for k, v in config.items(section):
+        # configparser can return None if allow_no_value=True and it was truly blank
+        if v is None:
+            out[k] = None
+            continue
+
+        v = v.strip().strip('"').strip("'")  # remove accidental quotes
+
+        if v == "" or v.lower() == "none":
+            out[k] = None
+        else:
+            out[k] = v
+
+    return out
