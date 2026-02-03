@@ -22,7 +22,6 @@ config = load_config()
 CHUNKSIZES = config.getint("data.handling", "CHUNKSIZES")
 
 
-
 def pool_files(path: str) -> dict:
     """
     Input: path to a directory with files

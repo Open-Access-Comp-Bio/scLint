@@ -16,7 +16,9 @@ def load_config(path: os.PathLike | str | None = None) -> configparser.ConfigPar
     return config
 
 
-def get_config(section: str, path: os.PathLike | str | None = None) -> dict[str, str | None]:
+def get_config(
+    section: str, path: os.PathLike | str | None = None
+) -> dict[str, str | None]:
     config = load_config(path)
     out: dict[str, str | None] = {}
 
