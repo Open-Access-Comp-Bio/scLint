@@ -182,6 +182,26 @@ def dimensionality_check(for_anndata: dict) -> dict:
     return anndata_dict
 
 
+### TODO: why should the above not be:
+"""
+def dimensionality_check(for_anndata: dict) -> dict:
+    X = for_anndata["X"]
+    obs = for_anndata["obs"]
+    var = for_anndata["var"]
+
+    # X should be (n_obs, n_vars)
+    if X.shape[0] != obs.shape[0]:
+        X = X.loc[obs.index, :]
+
+    if X.shape[1] != var.shape[0]:
+        X = X.loc[:, var.index]
+
+    for_anndata["X"] = X
+    return for_anndata
+
+"""
+
+
 def _anndata_helper(
     adata: ad.AnnData, data_type: str, data: pd.DataFrame
 ) -> ad.AnnData:
