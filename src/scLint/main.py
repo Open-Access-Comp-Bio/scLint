@@ -1,3 +1,9 @@
+import warnings
+warnings.filterwarnings(
+    "ignore",
+    category=FutureWarning,
+    module="scanpy"
+)
 import argparse
 import scanpy as sc
 from scLint.sc_parser import scParser
