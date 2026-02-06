@@ -6,36 +6,18 @@ import scanpy as sc
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from pathlib import Path
 
 from scLint.utils.logger import Logger, Issue
-
+from scLint.utils.config_loader import get_config
 
 # Using Tevino dataset as first test case
 ##############################
 # Global Vars and Classes
 ##############################
 
-
-DEFAULT_OBS_KEYS = [
-    "cell_type",
-    "sample",
-    "batch",
-    "n_genes",
-    "n_counts",
-    "percent_mito",
-    "leiden",
-    "condition",
-]
-
-DEFAULT_VAR_KEYS = [
-    "gene_ids",
-    "gene_symbols",
-    "highly_variable",
-    "means",
-    "dispersions",
-    "mito",
-    "chromosome",
-]
+DEFAULT_OBS_KEYS = [v for v in get_config("obs.keys").values() if v is not None]
+DEFAULT_VAR_KEYS = [v for v in get_config("var.keys").values() if v is not None]
 
 ##############################
 # Linting Rules
@@ -228,57 +210,66 @@ def basic_exploration(adata, output_dir=None):
 
     # Print summary stats
     print("\nQC Summary:")
-    print(adata.obs[["RNA.Counts", "RNA.Features", "Percent.MT"]].describe())
-
+    ## Added try and except to handle the lack of the columns from erroring out
+    try:
+        print(adata.obs[["RNA.Counts", "RNA.Features", "Percent.MT"]].describe())
+    except:
+        print(adata.obs.describe())
     # Plotting
     if output_dir:
         os.makedirs(output_dir, exist_ok=True)
-
+        ## TODO ADD SOMETHING EXTRA TO DEDUCE THE COLUMNS TO PLOT!!!
+        ## ['NAME', 'Cell_line', 'Pool_ID', 'Cancer_type', 'Genes_expressed',
+        ##'Discrete_cluster_minpts5_eps1.8', 'Discrete_cluster_minpts5_eps1.5',
+        ## 'Discrete_cluster_minpts5_eps1.2', 'CNA_subclone', 'SkinPig_score',
+        ##'EMTI_score', 'EMTII_score', 'EMTIII_score', 'IFNResp_score',
+        ##'p53Sen_score', 'EpiSen_score', 'StressResp_score', 'ProtMatu_score',
+        ##'ProtDegra_score', 'G1/S_score', 'G2/M_score'],
         save_plot(
             sc.pl.violin,
             os.path.join(output_dir, "violin_qc.png"),
             adata,
-            ["RNA.Features", "RNA.Counts", "Percent.MT"],
+            ["Cancer_type", "p53Sen_score", "EMTI_score"],
             jitter=0.4,
             multi_panel=True,
         )
 
-        save_plot(
-            sc.pl.scatter,
-            os.path.join(output_dir, "scatter_counts_vs_mt.png"),
-            adata,
-            x="RNA.Counts",
-            y="Percent.MT",
-        )
+        # save_plot(
+        #     sc.pl.scatter,
+        #     os.path.join(output_dir, "scatter_counts_vs_mt.png"),
+        #     adata,
+        #     x="Cancer_types",
+        #     y="EMTI_score",
+        # )
 
         save_plot(
             sc.pl.scatter,
             os.path.join(output_dir, "scatter_counts_vs_features.png"),
             adata,
-            x="RNA.Counts",
-            y="RNA.Features",
+            x="p53Sen_score",
+            y="Cancer_type",
         )
     else:
         sc.pl.violin(
             adata,
-            ["RNA.Features", "RNA.Counts", "Percent.MT"],
+            ["Cancer_type", "p53Sen_score", "EMTI_score"],
             jitter=0.4,
             multi_panel=True,
         )
-        sc.pl.scatter(adata, x="RNA.Counts", y="Percent.MT")
-        sc.pl.scatter(adata, x="RNA.Counts", y="RNA.Features")
+        sc.pl.scatter(adata, x="p53Sen_score", y="EMTI_score")
+        sc.pl.scatter(adata, x="p53Sen_score", y="Cancer_type")
 
     # HVGs
-    sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=2000)
+    # sc.pp.highly_variable_genes(adata, flavor="seurat", n_top_genes=2000)
 
-    if output_dir:
-        save_plot(
-            sc.pl.highly_variable_genes,
-            os.path.join(output_dir, "highly_variable_genes.png"),
-            adata,
-        )
-    else:
-        sc.pl.highly_variable_genes(adata)
+    # if output_dir:
+    #     save_plot(
+    #         sc.pl.highly_variable_genes,
+    #         os.path.join(output_dir, "highly_variable_genes.png"),
+    #         adata,
+    #     )
+    # else:
+    #     sc.pl.highly_variable_genes(adata)
 
     # PCA
     sc.pp.normalize_total(adata, target_sum=1e4)
@@ -287,10 +278,10 @@ def basic_exploration(adata, output_dir=None):
 
     if output_dir:
         save_plot(
-            sc.pl.pca, os.path.join(output_dir, "pca.png"), adata, color="RNA.Counts"
+            sc.pl.pca, os.path.join(output_dir, "pca.png"), adata, color="Cancer_type"
         )
     else:
-        sc.pl.pca(adata, color="RNA.Counts")
+        sc.pl.pca(adata, color="Cancer_type")
 
 
 def main():
@@ -331,6 +322,7 @@ def main():
     logger.log(
         f"Loading AnnData from: {args.adata_path}", severity="INFO", source="main"
     )
+    # ===========
     try:
         adata = sc.read_h5ad(args.adata_path)
     except Exception as e:

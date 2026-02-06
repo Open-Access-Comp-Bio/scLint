@@ -56,3 +56,4 @@ Issues = "https://github.com/Open-Access-Comp-Bio/scLint/issues"
 
 [project.scripts]
 scLint = "scLint.main:main"
+command_name = "module.path:function"

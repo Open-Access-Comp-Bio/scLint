@@ -4,6 +4,7 @@ from scLint.sc_parser_utility import (
     pool_files,
     id_files,
     open_files,
+    dimensionality_check,
     create_anndata,
     anndata_out,
 )
@@ -86,6 +87,9 @@ class scParser:
         on memory managementneeds.
         """
         self.dict_dfs = open_files(self.df_paths, sep=self.sep)
+
+    def check_dims(self) -> None:
+        self.dict_dfs = dimensionality_check(self.dict_dfs)
 
     def gen_anndata(self) -> None:
         """
